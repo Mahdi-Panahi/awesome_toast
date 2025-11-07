@@ -208,13 +208,13 @@ class _DemoScreenState extends State<DemoScreen> {
                   onPressed: () {
                     ToastService.instance.info(
                       'Action Required',
-                      'This toast will not be dismissed lkm;lkm;lkm;lkm;lkm;lkm;lkm;lkml;mautomatically.',
+                      'This toast will not be dismissed automatically.',
                       autoDismiss: false,
-                      actionLabel: 'Undoooooo',
+                      actionLabel: 'Do SomeThing',
                       onAction: () {
                         ToastService.instance.success(
-                          'Restored',
-                          'Item has been restored.',
+                          'Done!',
+                          'Action done.',
                         );
                       },
                     );
