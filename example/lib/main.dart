@@ -288,6 +288,7 @@ class _DemoScreenState extends State<DemoScreen> {
                         title: 'Custom Action',
                         message: 'This toast has a custom action button style.',
                         type: ToastType.info,
+                        hasActionLabel: true,
                       ),
                       duration: const Duration(seconds: 10),
                       showProgress: true,
@@ -320,25 +321,6 @@ class _DemoScreenState extends State<DemoScreen> {
                   label: const Text('Custom Progress Indicator'),
                 ),
               ]),
-              const SizedBox(height: 24),
-              _buildSection('Performance Info', [
-                _buildInstruction(
-                  Icons.speed,
-                  'Uses ValueNotifier for drag offset (no setState)',
-                ),
-                _buildInstruction(
-                  Icons.memory,
-                  'LayoutBuilder replaces custom height measurer',
-                ),
-                _buildInstruction(
-                  Icons.animation,
-                  'Optimized rebuild scopes with ListenableBuilder',
-                ),
-                _buildInstruction(
-                  Icons.lightbulb,
-                  'Hover state managed with dedicated ChangeNotifier',
-                ),
-              ]),
               const SizedBox(height: 16),
               _buildSection('Instructions', [
                 _buildInstruction(
@@ -355,26 +337,22 @@ class _DemoScreenState extends State<DemoScreen> {
                   'Stack appears when toast count exceeds threshold',
                 ),
               ]),
-              const SizedBox(height: 24),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Current State',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 8),
-                      Text('Active Toasts: ${ToastService.instance.count}'),
-                      Text('Theme: ${_isDark ? "Dark" : "Light"}'),
-                      const Text('Position: Top Center'),
-                      const Text('Stack Threshold: 3'),
-                    ],
-                  ),
+              const SizedBox(height: 16),
+              _buildSection('Current State', [
+                ListenableBuilder(
+                  listenable: ToastService.instance,
+                  builder: (context, child) {
+                    return Text(
+                        'Active Toasts: ${ToastService.instance.count}');
+                  },
                 ),
-              ),
+                Text('Theme: ${_isDark ? "Dark" : "Light"}'),
+                Text(
+                    'Position: ${ToastService.instance.config?.position.name}'),
+                Text(
+                    'Stack Threshold: ${ToastService.instance.config?.stackThreshold}'),
+              ]),
+
             ],
           ),
         ),
@@ -384,6 +362,7 @@ class _DemoScreenState extends State<DemoScreen> {
 
   Widget _buildSection(String title, List<Widget> children) {
     return Card(
+      elevation: 5,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -391,10 +370,9 @@ class _DemoScreenState extends State<DemoScreen> {
           children: [
             Text(
               title,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium
-                  ?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.primary),
             ),
             const SizedBox(height: 12),
             ...children,
@@ -428,7 +406,7 @@ class _DemoScreenState extends State<DemoScreen> {
           Icon(icon, size: 20),
           const SizedBox(width: 8),
           Expanded(
-            child: Text(text, style: Theme.of(context).textTheme.bodySmall),
+            child: Text(text),
           ),
         ],
       ),
