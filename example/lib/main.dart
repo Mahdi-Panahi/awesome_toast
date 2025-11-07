@@ -255,7 +255,9 @@ class _DemoScreenState extends State<DemoScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => SecondScreen(isDark: _isDark,),
+                        builder: (context) => SecondScreen(
+                          isDark: _isDark,
+                        ),
                       ),
                     );
                   },
@@ -352,7 +354,6 @@ class _DemoScreenState extends State<DemoScreen> {
                 Text(
                     'Stack Threshold: ${ToastService.instance.config?.stackThreshold}'),
               ]),
-
             ],
           ),
         ),
@@ -415,14 +416,14 @@ class _DemoScreenState extends State<DemoScreen> {
 }
 
 class SecondScreen extends StatelessWidget {
-  const SecondScreen({super.key,required this.isDark});
+  const SecondScreen({super.key, required this.isDark});
   final bool isDark;
 
   @override
   Widget build(BuildContext context) {
     return Theme(
-      data: isDark ? ThemeData.dark() : ThemeData.light(),child:
-    Scaffold(
+      data: isDark ? ThemeData.dark() : ThemeData.light(),
+      child: Scaffold(
         appBar: AppBar(title: const Text('Second Screen')),
         body: Center(
           child: Column(
