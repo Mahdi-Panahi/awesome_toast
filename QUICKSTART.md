@@ -1,6 +1,6 @@
 # Quick Start Guide
 
-Get started with flutter_toast_stack in 5 minutes!
+Get started with awesome_toast in 5 minutes!
 
 ## 1. Installation
 
@@ -8,7 +8,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  flutter_toast_stack: ^1.0.0
+  awesome_toast: ^1.0.0
 ```
 
 Run:
@@ -22,7 +22,7 @@ Wrap your MaterialApp with ToastProvider:
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:flutter_toast_stack/flutter_toast_stack.dart';
+import 'package:awesome_toast/awesome_toast.dart';
 
 void main() {
   runApp(
@@ -202,7 +202,7 @@ void uploadFile() {
 
 ## That's It!
 
-You're ready to use flutter_toast_stack in your app!
+You're ready to use awesome_toast in your app!
 
 ### Next Steps
 

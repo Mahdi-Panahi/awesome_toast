@@ -1,6 +1,6 @@
 # API Reference
 
-Complete API documentation for flutter_toast_stack package.
+Complete API documentation for awesome_toast package.
 
 ## Table of Contents
 
@@ -645,7 +645,7 @@ If you're migrating from other packages:
 // Old package
 showToast(context, 'Message');
 
-// flutter_toast_stack
+// awesome_toast
 ToastService.instance.info('Title', 'Message');
 ```
 
