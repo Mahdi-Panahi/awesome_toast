@@ -255,7 +255,7 @@ class _DemoScreenState extends State<DemoScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const SecondScreen(),
+                        builder: (context) => SecondScreen(isDark: _isDark,),
                       ),
                     );
                   },
@@ -415,34 +415,38 @@ class _DemoScreenState extends State<DemoScreen> {
 }
 
 class SecondScreen extends StatelessWidget {
-  const SecondScreen({super.key});
+  const SecondScreen({super.key,required this.isDark});
+  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Second Screen')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('Notice the toast persists across navigation!'),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: () {
-                ToastService.instance.success(
-                  'From Second Screen',
-                  'This toast was shown from the second screen.',
-                );
-              },
-              icon: const Icon(Icons.add),
-              label: const Text('Show Toast from Here'),
-            ),
-            const SizedBox(height: 16),
-            OutlinedButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Go Back'),
-            ),
-          ],
+    return Theme(
+      data: isDark ? ThemeData.dark() : ThemeData.light(),child:
+    Scaffold(
+        appBar: AppBar(title: const Text('Second Screen')),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('Notice the toast persists across navigation!'),
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
+                onPressed: () {
+                  ToastService.instance.success(
+                    'From Second Screen',
+                    'This toast was shown from the second screen.',
+                  );
+                },
+                icon: const Icon(Icons.add),
+                label: const Text('Show Toast from Here'),
+              ),
+              const SizedBox(height: 16),
+              OutlinedButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Go Back'),
+              ),
+            ],
+          ),
         ),
       ),
     );
