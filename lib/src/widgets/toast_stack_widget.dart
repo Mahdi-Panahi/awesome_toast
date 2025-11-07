@@ -523,6 +523,13 @@ class _ToastItemWidgetState extends State<_ToastItemWidget>
             clipBehavior: Clip.none,
             children: [
               widget.item.child,
+
+              // if(widget.item.actionLabel != null)
+              //   Container(
+              //     width: 100,
+              //     height: 200,
+              //     color: Colors.red,
+              //   ),
               if (widget.item.showProgress && widget.item.duration != null)
                 Positioned(
                   bottom: 0,

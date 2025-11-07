@@ -14,6 +14,7 @@ class DefaultToast extends StatelessWidget {
   final TextStyle? messageStyle;
   final EdgeInsets? padding;
   final BorderRadius? borderRadius;
+  final bool actionLabel;
 
   const DefaultToast({
     super.key,
@@ -26,6 +27,7 @@ class DefaultToast extends StatelessWidget {
     this.messageStyle,
     this.padding,
     this.borderRadius,
+    this.actionLabel = false,
   });
 
   @override
@@ -42,22 +44,26 @@ class DefaultToast extends StatelessWidget {
     } else {
       switch (type) {
         case ToastType.success:
-          effectiveBackgroundColor = backgroundColor ??
+          effectiveBackgroundColor =
+              backgroundColor ??
               (isDark ? Colors.green.shade900 : Colors.green.shade100);
           effectiveIcon = icon ?? Icons.check_circle;
           break;
         case ToastType.error:
-          effectiveBackgroundColor = backgroundColor ??
+          effectiveBackgroundColor =
+              backgroundColor ??
               (isDark ? Colors.red.shade900 : Colors.red.shade100);
           effectiveIcon = icon ?? Icons.error;
           break;
         case ToastType.warning:
-          effectiveBackgroundColor = backgroundColor ??
+          effectiveBackgroundColor =
+              backgroundColor ??
               (isDark ? Colors.orange.shade900 : Colors.orange.shade100);
           effectiveIcon = icon ?? Icons.warning;
           break;
         case ToastType.info:
-          effectiveBackgroundColor = backgroundColor ??
+          effectiveBackgroundColor =
+              backgroundColor ??
               (isDark ? Colors.blue.shade900 : Colors.blue.shade100);
           effectiveIcon = icon ?? Icons.info;
           break;
@@ -81,7 +87,8 @@ class DefaultToast extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: titleStyle ??
+                  style:
+                      titleStyle ??
                       ToastService.instance.config?.titleTextStyle ??
                       const TextStyle(
                         fontWeight: FontWeight.bold,
@@ -91,10 +98,12 @@ class DefaultToast extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   message,
-                  style: messageStyle ??
+                  style:
+                      messageStyle ??
                       ToastService.instance.config?.messageStyle ??
                       const TextStyle(fontSize: 14),
                 ),
+                if (actionLabel) SizedBox(height: 32),
               ],
             ),
           ),

@@ -108,6 +108,7 @@ class ToastService extends ChangeNotifier {
             message: message,
             type: type,
             config: _config,
+            actionLabel: actionLabel,
           ),
         ),
         duration: duration,
@@ -125,14 +126,14 @@ class ToastService extends ChangeNotifier {
 
   /// Show success toast
   void success(
-      String title,
-      String message, {
-        Duration? duration,
-        bool? showProgress,
-        String? actionLabel,
-        VoidCallback? onAction,
-        bool autoDismiss = true,
-      }) {
+    String title,
+    String message, {
+    Duration? duration,
+    bool? showProgress,
+    String? actionLabel,
+    VoidCallback? onAction,
+    bool autoDismiss = true,
+  }) {
     showDefault(
       title: title,
       message: message,
@@ -146,14 +147,14 @@ class ToastService extends ChangeNotifier {
 
   /// Show error toast
   void error(
-      String title,
-      String message, {
-        Duration? duration,
-        bool? showProgress,
-        String? actionLabel,
-        VoidCallback? onAction,
-        bool autoDismiss = true,
-      }) {
+    String title,
+    String message, {
+    Duration? duration,
+    bool? showProgress,
+    String? actionLabel,
+    VoidCallback? onAction,
+    bool autoDismiss = true,
+  }) {
     showDefault(
       title: title,
       message: message,
@@ -167,14 +168,14 @@ class ToastService extends ChangeNotifier {
 
   /// Show warning toast
   void warning(
-      String title,
-      String message, {
-        Duration? duration,
-        bool? showProgress,
-        String? actionLabel,
-        VoidCallback? onAction,
-        bool autoDismiss = true,
-      }) {
+    String title,
+    String message, {
+    Duration? duration,
+    bool? showProgress,
+    String? actionLabel,
+    VoidCallback? onAction,
+    bool autoDismiss = true,
+  }) {
     showDefault(
       title: title,
       message: message,
@@ -188,14 +189,14 @@ class ToastService extends ChangeNotifier {
 
   /// Show info toast
   void info(
-      String title,
-      String message, {
-        Duration? duration,
-        bool? showProgress,
-        String? actionLabel,
-        VoidCallback? onAction,
-        bool autoDismiss = true,
-      }) {
+    String title,
+    String message, {
+    Duration? duration,
+    bool? showProgress,
+    String? actionLabel,
+    VoidCallback? onAction,
+    bool autoDismiss = true,
+  }) {
     showDefault(
       title: title,
       message: message,
@@ -234,12 +235,14 @@ class _DefaultToastInternal extends StatelessWidget {
   final String message;
   final ToastType type;
   final ToastStackConfig? config;
+  final String? actionLabel;
 
   const _DefaultToastInternal({
     required this.title,
     required this.message,
     required this.type,
     this.config,
+    required this.actionLabel,
   });
 
   @override
@@ -252,8 +255,9 @@ class _DefaultToastInternal extends StatelessWidget {
 
     switch (type) {
       case ToastType.success:
-        backgroundColor =
-        isDark ? Colors.green.shade900 : Colors.green.shade100;
+        backgroundColor = isDark
+            ? Colors.green.shade900
+            : Colors.green.shade100;
         icon = Icons.check_circle;
         break;
       case ToastType.error:
@@ -261,8 +265,9 @@ class _DefaultToastInternal extends StatelessWidget {
         icon = Icons.error;
         break;
       case ToastType.warning:
-        backgroundColor =
-        isDark ? Colors.orange.shade900 : Colors.orange.shade100;
+        backgroundColor = isDark
+            ? Colors.orange.shade900
+            : Colors.orange.shade100;
         icon = Icons.warning;
         break;
       case ToastType.info:
@@ -288,13 +293,19 @@ class _DefaultToastInternal extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: config?.titleTextStyle ?? const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
+                  style:
+                      config?.titleTextStyle ??
+                      const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
                 ),
                 const SizedBox(height: 4),
-                Text(message, style: config?.messageStyle ?? const TextStyle(fontSize: 14)),
+                Text(
+                  message,
+                  style: config?.messageStyle ?? const TextStyle(fontSize: 14),
+                ),
+                if (actionLabel != null) SizedBox(height: 32),
               ],
             ),
           ),

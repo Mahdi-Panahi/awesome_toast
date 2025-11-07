@@ -1,4 +1,3 @@
-
 import 'package:awesome_toast/awesome_toast.dart';
 import 'package:flutter/material.dart';
 
@@ -24,16 +23,17 @@ class MyApp extends StatelessWidget {
         showProgressByDefault: false,
         curve: Curves.easeInOutQuart,
         maxWidth: 340,
-        titleTextStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+        titleTextStyle: const TextStyle(
+            fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
         messageStyle: const TextStyle(fontSize: 14, color: Colors.black),
-        actionLabelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blue),
+        actionLabelStyle: const TextStyle(
+            fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blue),
         progressColor: Colors.blue,
         progressBackgroundColor: Colors.grey,
-        progressStrokeWidth: 5,
+        progressStrokeWidth: 2,
       ),
-
       child: MaterialApp(
-        title: 'Optimized Toast Stack Demo',
+        title: 'Awesome Toast Demo',
         theme: ThemeData(
           primarySwatch: Colors.blue,
           brightness: Brightness.light,
@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.dark,
           useMaterial3: true,
         ),
-        home:DemoScreen(),
+        home: DemoScreen(),
         debugShowCheckedModeBanner: false,
       ),
     );
@@ -64,22 +64,22 @@ class _DemoScreenState extends State<DemoScreen> {
 
   void _showRandomToast() {
     final types = [
-          () => ToastService.instance.success(
-        'Success',
-        'Operation completed successfully!',
-      ),
-          () => ToastService.instance.error(
-        'Error',
-        'Something went wrong. Please try again.',
-      ),
-          () => ToastService.instance.warning(
-        'Warning',
-        'Please review your information carefully.',
-      ),
-          () => ToastService.instance.info(
-        'Info',
-        'Here is some useful information for you.',
-      ),
+      () => ToastService.instance.success(
+            'Success',
+            'Operation completed successfully!',
+          ),
+      () => ToastService.instance.error(
+            'Error',
+            'Something went wrong. Please try again.',
+          ),
+      () => ToastService.instance.warning(
+            'Warning',
+            'Please review your information carefully.',
+          ),
+      () => ToastService.instance.info(
+            'Info',
+            'Here is some useful information for you.',
+          ),
     ];
 
     types[_counter % types.length]();
@@ -142,7 +142,7 @@ class _DemoScreenState extends State<DemoScreen> {
                   'Success Toast',
                   Icons.check_circle,
                   Colors.green,
-                      () => ToastService.instance.success(
+                  () => ToastService.instance.success(
                     'Success',
                     'Your changes have been saved successfully!',
                     showProgress: true,
@@ -152,7 +152,7 @@ class _DemoScreenState extends State<DemoScreen> {
                   'Error Toast',
                   Icons.error,
                   Colors.red,
-                      () => ToastService.instance.error(
+                  () => ToastService.instance.error(
                     'Error',
                     'Failed to save changes. Please try again.',
                     showProgress: true,
@@ -162,7 +162,7 @@ class _DemoScreenState extends State<DemoScreen> {
                   'Warning Toast',
                   Icons.warning,
                   Colors.orange,
-                      () => ToastService.instance.warning(
+                  () => ToastService.instance.warning(
                     'Warning',
                     'You have unsaved changes that will be lost.',
                   ),
@@ -171,7 +171,7 @@ class _DemoScreenState extends State<DemoScreen> {
                   'Info Toast',
                   Icons.info,
                   Colors.blue,
-                      () => ToastService.instance.info(
+                  () => ToastService.instance.info(
                     'Information',
                     'You can dismiss toasts by swiping or clicking close.',
                   ),
@@ -182,16 +182,23 @@ class _DemoScreenState extends State<DemoScreen> {
                 OutlinedButton.icon(
                   onPressed: () {
                     ToastService.instance.show(
-                      child: DefaultToast(
-                        title: 'Custom Toast',
-                        message: 'This toast uses DefaultToast widget',
-                        type: ToastType.info,
-                        backgroundColor: Colors.purple.shade100,
-                        icon: Icons.star,
-                      ),
-                      duration: const Duration(seconds: 5),
-                      showProgress: true,
-                    );
+                        child: DefaultToast(
+                          title: 'Custom Toast',
+                          message: 'This toast uses DefaultToast widget',
+                          type: ToastType.info,
+                          backgroundColor: Colors.purple.shade100,
+                          icon: Icons.star,
+                          actionLabel: true,
+                        ),
+                        duration: const Duration(seconds: 5),
+                        showProgress: true,
+                        actionLabel: 'Dismiss',
+                        onAction: () {
+                          ToastService.instance.success(
+                            'Dismissed',
+                            'Toast has been dismissed.',
+                          );
+                        });
                   },
                   icon: const Icon(Icons.palette),
                   label: const Text('Custom Styled Toast'),
@@ -209,7 +216,6 @@ class _DemoScreenState extends State<DemoScreen> {
                           'Restored',
                           'Item has been restored.',
                         );
-
                       },
                     );
                   },
@@ -287,7 +293,8 @@ class _DemoScreenState extends State<DemoScreen> {
                       showProgress: true,
                       actionLabel: 'Custom',
                       onAction: () {},
-                      actionLabelStyle: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                      actionLabelStyle: const TextStyle(
+                          color: Colors.red, fontWeight: FontWeight.bold),
                     );
                   },
                   icon: const Icon(Icons.touch_app),
@@ -398,11 +405,11 @@ class _DemoScreenState extends State<DemoScreen> {
   }
 
   Widget _buildToastButton(
-      String label,
-      IconData icon,
-      Color color,
-      VoidCallback onPressed,
-      ) {
+    String label,
+    IconData icon,
+    Color color,
+    VoidCallback onPressed,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: OutlinedButton.icon(
