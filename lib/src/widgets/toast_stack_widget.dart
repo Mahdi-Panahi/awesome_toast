@@ -20,11 +20,24 @@ class _HoverNotifier extends ChangeNotifier {
   }
 }
 
-/// Main widget that renders the toast stack
+/// A widget that displays a stack of toast notifications.
+///
+/// This widget is responsible for rendering the list of [ToastItem]s,
+/// handling their animations, stacking behavior, and user interactions
+/// like hovering and dismissing.
+///
+/// It is used internally by [ToastProvider] and is not typically
+/// used directly by application code.
 class ToastStackWidget extends StatefulWidget {
+  /// The list of toast items to display.
   final List<ToastItem> items;
+
+  /// The configuration for the toast stack's appearance and behavior.
   final ToastStackConfig config;
 
+  /// Creates a widget to display a stack of toasts.
+  ///
+  /// Requires a list of [items] and a [config].
   const ToastStackWidget({
     super.key,
     required this.items,

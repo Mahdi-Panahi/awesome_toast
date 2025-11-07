@@ -3,19 +3,56 @@ import 'package:flutter/material.dart';
 import '../models/toast_item.dart';
 import '../toast_service.dart';
 
-/// Default toast widget with customizable styling
+/// A default toast widget that provides a standard layout with an icon, title, and message.
+///
+/// This widget is used by [ToastService.showDefault] and can also be used directly
+/// with [ToastService.show] for custom toast content. It offers extensive
+
+/// customization options for colors, styles, and layout.
+///
+/// When used, it automatically adapts its colors to the current theme (light/dark)
+/// based on the [type], but all properties can be overridden.
 class DefaultToast extends StatelessWidget {
+  /// The main title of the toast.
   final String title;
+
+  /// The detailed message of the toast.
   final String message;
+
+  /// The type of toast, which determines the default icon and background color.
+  ///
+  /// Defaults to [ToastType.info].
   final ToastType type;
+
+  /// Overrides the default background color.
   final Color? backgroundColor;
+
+  /// Overrides the default icon.
   final IconData? icon;
+
+  /// Custom text style for the title.
+  ///
+  /// If null, it falls back to [ToastStackConfig.titleTextStyle].
   final TextStyle? titleStyle;
+
+  /// Custom text style for the message.
+  ///
+  /// If null, it falls back to [ToastStackConfig.messageStyle].
   final TextStyle? messageStyle;
+
+  /// The padding around the toast content.
   final EdgeInsets? padding;
+
+  /// The border radius of the toast container.
   final BorderRadius? borderRadius;
+
+  /// A boolean to indicate if the toast has an action label.
   final bool hasActionLabel;
 
+  /// Creates a default toast widget.
+  ///
+  /// The [title] and [message] are required. Other parameters are optional
+  /// and allow for detailed customization.
   const DefaultToast({
     super.key,
     required this.title,

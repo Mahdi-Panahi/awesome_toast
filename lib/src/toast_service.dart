@@ -3,7 +3,12 @@ import 'package:flutter/material.dart';
 import 'models/toast_config.dart';
 import 'models/toast_item.dart';
 
-/// Singleton service for managing toasts globally
+/// A singleton service for managing and displaying toast notifications globally.
+///
+/// This service provides methods to show, hide, and manage a queue of toasts.
+/// It should be accessed via the `ToastService.instance` getter.
+///
+/// The service must be initialized by a [ToastProvider] widget in the widget tree.
 class ToastService extends ChangeNotifier {
   static ToastService? _instance;
   ToastStackConfig? _config;
@@ -13,24 +18,40 @@ class ToastService extends ChangeNotifier {
 
   ToastService._();
 
-  /// Get the singleton instance
+  /// Provides access to the singleton instance of [ToastService].
   static ToastService get instance {
     _instance ??= ToastService._();
     return _instance!;
   }
 
-  /// Initialize with configuration (called by ToastProvider)
+  /// Initializes the service with a global configuration.
+  ///
+  /// This is called by [ToastProvider] and should not be called directly.
   void initialize(ToastStackConfig config) {
     _config = config;
   }
 
-  /// Get current configuration
+  /// The current global toast configuration.
   ToastStackConfig? get config => _config;
 
-  /// Get list of active toasts
+  /// A read-only list of the currently active toast items.
   List<ToastItem> get items => List.unmodifiable(_items);
 
-  /// Show a toast with custom widget
+  /// Displays a toast with a custom widget as its content.
+  ///
+  /// This is the most flexible method for showing toasts.
+  ///
+  /// - [child]: The widget to display inside the toast.
+  /// - [duration]: How long the toast should be visible. If null, it remains
+  ///   until dismissed manually.
+  /// - [showProgress]: Whether to show a progress indicator for the duration.
+  /// - [actionLabel]: An optional label for an action button on the toast.
+  /// - [onAction]: A callback triggered when the action button is pressed.
+  /// - [onDismiss]: A callback triggered when the toast is dismissed.
+  /// - [actionLabelStyle]: Custom text style for the action label.
+  /// - [progressColor]: Custom color for the progress indicator.
+  /// - [progressBackgroundColor]: Custom background color for the progress indicator.
+  /// - [progressStrokeWidth]: Custom stroke width for the progress indicator.
   void show({
     required Widget child,
     Duration? duration,
@@ -69,7 +90,10 @@ class ToastService extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Show a toast with default styling
+  /// Shows a toast using the default styling provided by [DefaultToast].
+  ///
+  /// This is a convenience method that simplifies showing standard toasts.
+  /// If a `toastBuilder` is provided in [ToastStackConfig], it will be used instead.
   void showDefault({
     required String title,
     required String message,
@@ -124,7 +148,9 @@ class ToastService extends ChangeNotifier {
     }
   }
 
-  /// Show success toast
+  /// Shows a success-themed toast.
+  ///
+  /// A shortcut for `showDefault` with `type = ToastType.success`.
   void success(
     String title,
     String message, {
@@ -145,7 +171,9 @@ class ToastService extends ChangeNotifier {
     );
   }
 
-  /// Show error toast
+  /// Shows an error-themed toast.
+  ///
+  /// A shortcut for `showDefault` with `type = ToastType.error`.
   void error(
     String title,
     String message, {
@@ -166,7 +194,9 @@ class ToastService extends ChangeNotifier {
     );
   }
 
-  /// Show warning toast
+  /// Shows a warning-themed toast.
+  ///
+  /// A shortcut for `showDefault` with `type = ToastType.warning`.
   void warning(
     String title,
     String message, {
@@ -187,7 +217,9 @@ class ToastService extends ChangeNotifier {
     );
   }
 
-  /// Show info toast
+  /// Shows an info-themed toast.
+  ///
+  /// A shortcut for `showDefault` with `type = ToastType.info`.
   void info(
     String title,
     String message, {
@@ -213,13 +245,13 @@ class ToastService extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Clear all active toasts
+  /// Removes all currently visible toasts from the screen.
   void clear() {
     _items.clear();
     notifyListeners();
   }
 
-  /// Get count of active toasts
+  /// The number of toasts currently on screen.
   int get count => _items.length;
 
   @override

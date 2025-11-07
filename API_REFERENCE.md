@@ -116,7 +116,8 @@ ToastService.instance.warning(
 
 #### info
 
-```dart
+dart
+```
 void info(
   String title,
   String message, {
