@@ -14,7 +14,7 @@ class DefaultToast extends StatelessWidget {
   final TextStyle? messageStyle;
   final EdgeInsets? padding;
   final BorderRadius? borderRadius;
-  final bool actionLabel;
+  final bool hasActionLabel;
 
   const DefaultToast({
     super.key,
@@ -27,7 +27,7 @@ class DefaultToast extends StatelessWidget {
     this.messageStyle,
     this.padding,
     this.borderRadius,
-    this.actionLabel = false,
+    this.hasActionLabel = false,
   });
 
   @override
@@ -103,7 +103,7 @@ class DefaultToast extends StatelessWidget {
                       ToastService.instance.config?.messageStyle ??
                       const TextStyle(fontSize: 14),
                 ),
-                if (actionLabel) SizedBox(height: 32),
+                if (hasActionLabel) SizedBox(height: 32),
               ],
             ),
           ),

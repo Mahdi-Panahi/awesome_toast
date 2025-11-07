@@ -188,7 +188,7 @@ class _DemoScreenState extends State<DemoScreen> {
                           type: ToastType.info,
                           backgroundColor: Colors.purple.shade100,
                           icon: Icons.star,
-                          actionLabel: true,
+                          hasActionLabel: true,
                         ),
                         duration: const Duration(seconds: 5),
                         showProgress: true,
