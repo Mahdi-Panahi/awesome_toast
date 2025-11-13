@@ -158,6 +158,7 @@ class ToastService extends ChangeNotifier {
     bool? showProgress,
     String? actionLabel,
     VoidCallback? onAction,
+    VoidCallback? onDismiss,
     bool autoDismiss = true,
   }) {
     showDefault(
@@ -168,6 +169,7 @@ class ToastService extends ChangeNotifier {
       showProgress: showProgress,
       actionLabel: actionLabel,
       onAction: onAction,
+      onDismiss: onDismiss,
     );
   }
 
@@ -181,6 +183,7 @@ class ToastService extends ChangeNotifier {
     bool? showProgress,
     String? actionLabel,
     VoidCallback? onAction,
+    VoidCallback? onDismiss,
     bool autoDismiss = true,
   }) {
     showDefault(
@@ -191,6 +194,7 @@ class ToastService extends ChangeNotifier {
       showProgress: showProgress,
       actionLabel: actionLabel,
       onAction: onAction,
+      onDismiss: onDismiss,
     );
   }
 
@@ -204,6 +208,7 @@ class ToastService extends ChangeNotifier {
     bool? showProgress,
     String? actionLabel,
     VoidCallback? onAction,
+    VoidCallback? onDismiss,
     bool autoDismiss = true,
   }) {
     showDefault(
@@ -214,6 +219,7 @@ class ToastService extends ChangeNotifier {
       showProgress: showProgress,
       actionLabel: actionLabel,
       onAction: onAction,
+      onDismiss: onDismiss,
     );
   }
 
@@ -227,6 +233,7 @@ class ToastService extends ChangeNotifier {
     bool? showProgress,
     String? actionLabel,
     VoidCallback? onAction,
+    VoidCallback? onDismiss,
     bool autoDismiss = true,
   }) {
     showDefault(
@@ -237,6 +244,7 @@ class ToastService extends ChangeNotifier {
       showProgress: showProgress,
       actionLabel: actionLabel,
       onAction: onAction,
+      onDismiss: onDismiss,
     );
   }
 
