@@ -1,0 +1,223 @@
+# Quick Start Guide
+
+Get started with awesome_toast in 5 minutes!
+
+## 1. Installation
+
+Add to your `pubspec.yaml`:
+
+```yaml
+dependencies:
+  awesome_toast: ^1.0.0
+```
+
+Run:
+```bash
+flutter pub get
+```
+
+## 2. Setup
+
+Wrap your MaterialApp with ToastProvider:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:awesome_toast/awesome_toast.dart';
+
+void main() {
+  runApp(
+    ToastProvider(
+      config: ToastStackConfig(
+        position: ToastPosition.topRight,
+        stackThreshold: 3,
+      ),
+      child: MaterialApp(
+        title: 'My App',
+        home: HomeScreen(),
+      ),
+    ),
+  );
+}
+```
+
+## 3. Show Toasts
+
+Use anywhere in your app - no context needed!
+
+```dart
+class HomeScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Home')),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            // Show a success toast
+            ToastService.instance.success(
+              'Success!',
+              'Operation completed successfully',
+            );
+          },
+          child: Text('Show Toast'),
+        ),
+      ),
+    );
+  }
+}
+```
+
+## 4. Toast Types
+
+```dart
+// Success (green)
+ToastService.instance.success('Done', 'Task completed');
+
+// Error (red)
+ToastService.instance.error('Failed', 'Something went wrong');
+
+// Warning (orange)
+ToastService.instance.warning('Caution', 'Please verify your input');
+
+// Info (blue)
+ToastService.instance.info('FYI', 'Here is some information');
+```
+
+## 5. Advanced Features
+
+### With Progress Bar
+
+```dart
+ToastService.instance.success(
+  'Uploading',
+  'Your file is being uploaded',
+  showProgress: true,
+  duration: Duration(seconds: 5),
+);
+```
+
+### With Action Button
+
+```dart
+ToastService.instance.info(
+  'Item Deleted',
+  'The item has been removed',
+  duration: null, // Manual dismiss
+  actionLabel: 'Undo',
+  onAction: () {
+    print('Undo clicked!');
+  },
+);
+```
+
+### Custom Toast
+
+```dart
+ToastService.instance.show(
+  child: Container(
+    padding: EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: Colors.purple,
+      borderRadius: BorderRadius.circular(8),
+    ),
+    child: Row(
+      children: [
+        Icon(Icons.star, color: Colors.white),
+        SizedBox(width: 12),
+        Text('Custom toast!', style: TextStyle(color: Colors.white)),
+      ],
+    ),
+  ),
+  duration: Duration(seconds: 3),
+);
+```
+
+## Configuration Options
+
+Customize toast behavior:
+
+```dart
+ToastStackConfig(
+  position: ToastPosition.bottomCenter,     // Where to show
+  stackThreshold: 5,                        // When to stack
+  defaultDuration: Duration(seconds: 4),    // How long to show
+  width: 400,                               // Toast width
+  showProgressByDefault: true,              // Always show progress
+)
+```
+
+## Common Use Cases
+
+### Save Confirmation
+
+```dart
+void saveData() async {
+  try {
+    await api.save();
+    ToastService.instance.success('Saved', 'Your changes are saved');
+  } catch (e) {
+    ToastService.instance.error('Error', 'Failed to save');
+  }
+}
+```
+
+### Delete with Undo
+
+```dart
+void deleteItem() {
+  ToastService.instance.warning(
+    'Deleted',
+    'Item removed',
+    duration: Duration(seconds: 5),
+    actionLabel: 'Undo',
+    onAction: () => restoreItem(),
+  );
+}
+```
+
+### Loading Indicator
+
+```dart
+void uploadFile() {
+  ToastService.instance.info(
+    'Uploading',
+    'Please wait...',
+    showProgress: true,
+    duration: null, // Manual dismiss
+    autoDismiss: false, // Manual dismiss
+  );
+  
+  // Later, after upload completes:
+  ToastService.instance.clear();
+  ToastService.instance.success('Done', 'Upload complete');
+}
+```
+
+## Interactive Features
+
+- **Swipe** left/right to dismiss
+- **Hover** over toasts to pause timers
+- **Click** close button to dismiss
+- **Tap** action button for actions
+
+## That's It!
+
+You're ready to use awesome_toast in your app!
+
+### Next Steps
+
+- Check out the [complete example](example/)
+- Read the [full documentation](README.md)
+- See the [API reference](API_REFERENCE.md)
+- Report issues on [GitHub](https://github.com/Mahdi-Panahi/awesome_toast/issues)
+
+### Need Help?
+
+- 📖 [README](README.md) - Complete guide
+- 🔧 [API Reference](API_REFERENCE.md) - Detailed API docs
+- 💬 [Discussions](https://https://github.com/Mahdi-Panahi/awesome_toast/discussions) - Ask questions
+- 🐛 [Issues](https://github.com/Mahdi-Panahi/awesome_toast/issues) - Report bugs
+
+---
+
+Happy coding! 🎉

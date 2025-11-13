@@ -2,11 +2,38 @@ import 'package:flutter/material.dart';
 
 import '../awesome_toast.dart';
 
-/// Provider widget that manages toast overlay
+/// A provider widget that sets up the toast notification system for its descendants.
+///
+/// This widget should be placed high in the widget tree, typically above `MaterialApp`
+/// or `CupertinoApp`, so that toasts can be displayed on top of all other content.
+///
+/// It initializes the [ToastService] with a given [ToastStackConfig] and provides
+/// the overlay for displaying toasts.
+///
+/// Example:
+/// ```dart
+/// ToastProvider(
+///   config: ToastStackConfig(position: ToastPosition.topCenter),
+///   child: MaterialApp(
+///     home: MyApp(),
+///   ),
+/// )
+/// ```
 class ToastProvider extends StatefulWidget {
+  /// The widget below this widget in the tree.
+  ///
+  /// This is typically your main application widget, like `MaterialApp`.
   final Widget child;
+
+  /// The global configuration for all toasts shown via this provider.
+  ///
+  /// This configuration can be overridden for individual toasts.
   final ToastStackConfig config;
 
+  /// Creates a toast provider.
+  ///
+  /// The [child] parameter is required and is the root of your application.
+  /// The [config] parameter allows you to customize the default toast behavior.
   const ToastProvider({
     super.key,
     required this.child,

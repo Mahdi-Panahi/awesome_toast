@@ -16,7 +16,7 @@ To use this package, add `awesome_toast` as a dependency in your `pubspec.yaml` 
 
 ```yaml
 dependencies:
-  awesome_toast: ^0.0.1
+  awesome_toast: ^1.0.0
 ```
 
 Then, wrap your `MaterialApp` with a `ToastProvider`:
@@ -30,7 +30,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +48,43 @@ Now you can show toasts from anywhere in your app:
 
 ```dart
 ToastService.instance.success('Success', 'This is a success toast.');
+```
+
+## Configuration
+
+You can customize the default behavior and appearance of toasts by providing a `ToastStackConfig` to the `ToastProvider`.
+
+```dart
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ToastProvider(
+      config: ToastStackConfig(
+        position: ToastPosition.topCenter,
+        stackThreshold: 3,
+        width: null,
+        defaultDuration: Duration(seconds: 5),
+        showProgressByDefault: false,
+        curve: Curves.easeInOutQuart,
+        maxWidth: 340,
+        titleTextStyle: const TextStyle(
+            fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+        messageStyle: const TextStyle(fontSize: 14, color: Colors.black),
+        actionLabelStyle: const TextStyle(
+            fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blue),
+        progressColor: Colors.blue,
+        progressBackgroundColor: Colors.grey,
+        progressStrokeWidth: 2,
+      ),
+      child: MaterialApp(
+        title: 'Awesome Toast Demo',
+        home: DemoScreen(),
+      ),
+    );
+  }
+}
 ```
 
 ## Contributing

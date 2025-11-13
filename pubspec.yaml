@@ -1,11 +1,11 @@
 name: awesome_toast
 description: "A beautiful, customizable toast notification system for Flutter with automatic stacking, smooth animations, and full navigation persistence."
-version: 0.0.1
+version: 1.0.0
 homepage: https://github.com/Mahdi-Panahi/awesome_toast
 repository: https://github.com/Mahdi-Panahi/awesome_toast
 
 environment:
-  sdk: ^3.9.2
+  sdk: '>=3.4.0 <4.0.0'
   flutter: ">=1.17.0"
 
 dependencies:
@@ -15,7 +15,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
