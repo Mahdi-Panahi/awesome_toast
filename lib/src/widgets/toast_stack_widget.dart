@@ -535,37 +535,6 @@ class _ToastItemWidgetState extends State<_ToastItemWidget>
         clipBehavior: Clip.none,
         children: [
           widget.item.contentBuilder(context, _progressNotifier, _dismiss),
-          if (widget.item.actionLabel != null)
-            Positioned(
-              right: 8,
-              bottom: 8,
-              child: TextButton(
-                onPressed: () {
-                  if (widget.item.onAction != null) {
-                    widget.item.onAction!();
-                  }
-                  _dismiss();
-                },
-                child: Text(
-                  widget.item.actionLabel!,
-                  style: widget.item.actionLabelStyle ??
-                      widget.config.actionLabelStyle,
-                ),
-              ),
-            ),
-          Positioned(
-            top: 4,
-            right: 4,
-            child: IconButton(
-              icon: const Icon(Icons.close, size: 18),
-              onPressed: _dismiss,
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(
-                minWidth: 24,
-                minHeight: 24,
-              ),
-            ),
-          ),
         ],
       ),
     );

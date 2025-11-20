@@ -1,3 +1,4 @@
+import 'package:awesome_toast/src/models/toast_action.dart';
 import 'package:flutter/material.dart';
 
 import '../models/toast_item.dart';
@@ -50,11 +51,10 @@ class ToastStackConfig {
     String title,
     String message,
     ToastType type,
-    VoidCallback? onAction,
     ValueNotifier<double>? progress,
-    String? actionLabel,
     bool? showProgress,
     VoidCallback? dismissToast,
+    List<ToastAction>? actions,
   )? toastBuilder;
 
   /// Default title text style
@@ -63,8 +63,8 @@ class ToastStackConfig {
   /// Default message text style
   final TextStyle? messageStyle;
 
-  /// Default action button text style
-  final TextStyle? actionLabelStyle;
+  /// Default action buttons text style
+  final TextStyle? buttonsActionStyle;
 
   /// Default progress indicator color
   final Color? progressColor;
@@ -92,7 +92,7 @@ class ToastStackConfig {
     this.toastBuilder,
     this.titleTextStyle,
     this.messageStyle,
-    this.actionLabelStyle,
+    this.buttonsActionStyle,
     this.progressColor,
     this.progressBackgroundColor,
     this.progressStrokeWidth,
@@ -126,15 +126,14 @@ class ToastStackConfig {
       String title,
       String message,
       ToastType type,
-      VoidCallback? onAction,
       ValueNotifier<double>? progress,
-      String? actionLabel,
       bool? showProgress,
       VoidCallback? dismissToast,
+      List<ToastAction>? actions,
     )? toastBuilder,
     TextStyle? titleTextStyle,
     TextStyle? messageStyle,
-    TextStyle? actionLabelStyle,
+    TextStyle? buttonsActionStyle,
     Color? progressColor,
     Color? progressBackgroundColor,
     double? progressStrokeWidth,
@@ -157,7 +156,7 @@ class ToastStackConfig {
       toastBuilder: toastBuilder ?? this.toastBuilder,
       titleTextStyle: titleTextStyle ?? this.titleTextStyle,
       messageStyle: messageStyle ?? this.messageStyle,
-      actionLabelStyle: actionLabelStyle ?? this.actionLabelStyle,
+      buttonsActionStyle: buttonsActionStyle ?? this.buttonsActionStyle,
       progressColor: progressColor ?? this.progressColor,
       progressBackgroundColor:
           progressBackgroundColor ?? this.progressBackgroundColor,

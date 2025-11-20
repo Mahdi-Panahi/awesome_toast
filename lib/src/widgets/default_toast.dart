@@ -1,7 +1,5 @@
+import 'package:awesome_toast/awesome_toast.dart';
 import 'package:flutter/material.dart';
-
-import '../models/toast_item.dart';
-import '../toast_service.dart';
 
 /// A default toast widget that provides a standard layout with an icon, title, and message.
 ///
@@ -46,11 +44,11 @@ class DefaultToast extends StatelessWidget {
   /// The border radius of the toast container.
   final BorderRadius? borderRadius;
 
-  /// A boolean to indicate if the toast has an action label.
-  final bool hasActionLabel;
-
   /// Callback when the toast is dismissed.
   final VoidCallback? onDismiss;
+
+  /// A list of [ToastAction] buttons to display on the toast.
+  final List<ToastAction>? actions;
 
   /// Creates a default toast widget.
   ///
@@ -67,8 +65,8 @@ class DefaultToast extends StatelessWidget {
     this.messageStyle,
     this.padding,
     this.borderRadius,
-    this.hasActionLabel = false,
     this.onDismiss,
+    this.actions,
   });
 
   @override
@@ -104,6 +102,11 @@ class DefaultToast extends StatelessWidget {
               (isDark ? Colors.blue.shade900 : Colors.blue.shade100);
           effectiveIcon = icon ?? Icons.info;
           break;
+        case ToastType.none:
+          effectiveBackgroundColor =
+              backgroundColor ?? (isDark ? Colors.white70 : Colors.black87);
+          effectiveIcon = icon ?? Icons.sentiment_dissatisfied;
+          break;
       }
     }
 
@@ -138,7 +141,27 @@ class DefaultToast extends StatelessWidget {
                       ToastService.instance.config?.messageStyle ??
                       const TextStyle(fontSize: 14),
                 ),
-                if (hasActionLabel) SizedBox(height: 32),
+                if (actions?.isNotEmpty ?? false) ...[
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: actions!
+                        .map(
+                          (action) => TextButton(
+                            onPressed: () {
+                              action.onPressed();
+                              onDismiss?.call();
+                            },
+                            child: Text(
+                              action.label,
+                              style: ToastService
+                                  .instance.config?.buttonsActionStyle,
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ]
               ],
             ),
           ),

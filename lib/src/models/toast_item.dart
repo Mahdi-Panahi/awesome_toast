@@ -1,3 +1,4 @@
+import 'package:awesome_toast/src/models/toast_action.dart';
 import 'package:flutter/material.dart';
 
 /// A builder function for creating the content of a toast.
@@ -8,7 +9,7 @@ typedef ToastContentBuilder = Widget Function(
     BuildContext context, ValueNotifier<double>? progress, VoidCallback? dismissToast);
 
 /// Types of default toast messages
-enum ToastType { success, error, warning, info }
+enum ToastType { success, error, warning, info, none }
 
 /// Individual toast item
 class ToastItem {
@@ -27,14 +28,11 @@ class ToastItem {
   /// Whether to show progress indicator
   final bool showProgress;
 
-  /// Optional action button label
-  final String? actionLabel;
+  /// Optional list of action buttons
+  final List<ToastAction>? actions;
 
-  /// Action button callback
-  final VoidCallback? onAction;
-
-  /// Custom text style for the action button
-  final TextStyle? actionLabelStyle;
+  /// Custom text style for the action buttons
+  final TextStyle? buttonsActionStyle;
 
   /// Custom color for the progress indicator
   final Color? progressColor;
@@ -51,9 +49,8 @@ class ToastItem {
     this.duration,
     this.onDismiss,
     this.showProgress = false,
-    this.actionLabel,
-    this.onAction,
-    this.actionLabelStyle,
+    this.actions,
+    this.buttonsActionStyle,
     this.progressColor,
     this.progressBackgroundColor,
     this.progressStrokeWidth,

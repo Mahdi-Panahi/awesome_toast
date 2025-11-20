@@ -1,3 +1,4 @@
+import 'package:awesome_toast/src/models/toast_action.dart';
 import 'package:flutter/material.dart';
 
 import 'models/toast_config.dart';
@@ -46,10 +47,9 @@ class ToastService extends ChangeNotifier {
   /// - [duration]: How long the toast should be visible. If null, it remains
   ///   until dismissed manually.
   /// - [showProgress]: Whether to show a progress indicator for the duration.
-  /// - [actionLabel]: An optional label for an action button on the toast.
-  /// - [onAction]: A callback triggered when the action button is pressed.
+  /// - [actions]: A list of [ToastAction] buttons to display on the toast.
   /// - [onDismiss]: A callback triggered when the toast is dismissed.
-  /// - [actionLabelStyle]: Custom text style for the action label.
+  /// - [buttonsActionStyle]: Custom text style for the action buttons.
   /// - [progressColor]: Custom color for the progress indicator.
   /// - [progressBackgroundColor]: Custom background color for the progress indicator.
   /// - [progressStrokeWidth]: Custom stroke width for the progress indicator.
@@ -57,18 +57,27 @@ class ToastService extends ChangeNotifier {
     required ToastContentBuilder contentBuilder,
     Duration? duration,
     bool? showProgress,
-    String? actionLabel,
-    VoidCallback? onAction,
+    @Deprecated('Use actions instead') String? actionLabel,
+    @Deprecated('Use actions instead') VoidCallback? onAction,
     VoidCallback? onDismiss,
-    TextStyle? actionLabelStyle,
+    TextStyle? buttonsActionStyle,
     Color? progressColor,
     Color? progressBackgroundColor,
     double? progressStrokeWidth,
+    List<ToastAction>? actions,
   }) {
     final key = 'toast_${_counter++}_${DateTime.now().millisecondsSinceEpoch}';
 
     final effectiveShowProgress =
         showProgress ?? _config?.showProgressByDefault ?? false;
+
+    final allActions = <ToastAction>[];
+    if (actions != null) {
+      allActions.addAll(actions);
+    }
+    if (actionLabel != null && onAction != null) {
+      allActions.add(ToastAction(label: actionLabel, onPressed: onAction));
+    }
 
     final item = ToastItem(
       key: key,
@@ -79,9 +88,8 @@ class ToastService extends ChangeNotifier {
         onDismiss?.call();
       },
       showProgress: effectiveShowProgress,
-      actionLabel: actionLabel,
-      onAction: onAction,
-      actionLabelStyle: actionLabelStyle,
+      actions: allActions.isNotEmpty ? allActions : null,
+      buttonsActionStyle: buttonsActionStyle,
       progressColor: progressColor,
       progressBackgroundColor: progressBackgroundColor,
       progressStrokeWidth: progressStrokeWidth,
@@ -101,14 +109,23 @@ class ToastService extends ChangeNotifier {
     ToastType type = ToastType.info,
     Duration? duration,
     bool? showProgress,
-    String? actionLabel,
-    VoidCallback? onAction,
+    @Deprecated('Use actions instead') String? actionLabel,
+    @Deprecated('Use actions instead') VoidCallback? onAction,
     VoidCallback? onDismiss,
-    TextStyle? actionLabelStyle,
+    TextStyle? buttonsActionStyle,
     Color? progressColor,
     Color? progressBackgroundColor,
     double? progressStrokeWidth,
+    List<ToastAction>? actions,
   }) {
+    final allActions = <ToastAction>[];
+    if (actions != null) {
+      allActions.addAll(actions);
+    }
+    if (actionLabel != null && onAction != null) {
+      allActions.add(ToastAction(label: actionLabel, onPressed: onAction));
+    }
+
     show(
       contentBuilder: (context, progress, dismissToast) {
         if (_config?.toastBuilder != null) {
@@ -117,28 +134,25 @@ class ToastService extends ChangeNotifier {
             title,
             message,
             type,
-            onAction,
             progress,
-            actionLabel,
             showProgress,
             dismissToast,
+            allActions.isNotEmpty ? allActions : null,
           );
         } else {
           return DefaultToast(
             title: title,
             message: message,
             type: type,
-            hasActionLabel: actionLabel != null,
             onDismiss: dismissToast,
+            actions: allActions.isNotEmpty ? allActions : null,
           );
         }
       },
       duration: duration,
       showProgress: showProgress,
-      actionLabel: actionLabel,
-      onAction: onAction,
       onDismiss: onDismiss,
-      actionLabelStyle: actionLabelStyle,
+      buttonsActionStyle: buttonsActionStyle,
       progressColor: progressColor,
       progressBackgroundColor: progressBackgroundColor,
       progressStrokeWidth: progressStrokeWidth,
@@ -153,20 +167,28 @@ class ToastService extends ChangeNotifier {
     String message, {
     Duration? duration,
     bool? showProgress,
-    String? actionLabel,
-    VoidCallback? onAction,
+    @Deprecated('Use actions instead') String? actionLabel,
+    @Deprecated('Use actions instead') VoidCallback? onAction,
     VoidCallback? onDismiss,
     bool autoDismiss = true,
+    List<ToastAction>? actions,
   }) {
+    final allActions = <ToastAction>[];
+    if (actions != null) {
+      allActions.addAll(actions);
+    }
+    if (actionLabel != null && onAction != null) {
+      allActions.add(ToastAction(label: actionLabel, onPressed: onAction));
+    }
+
     showDefault(
       title: title,
       message: message,
       type: ToastType.success,
       duration: autoDismiss ? (duration ?? _config?.defaultDuration) : null,
       showProgress: showProgress,
-      actionLabel: actionLabel,
-      onAction: onAction,
       onDismiss: onDismiss,
+      actions: allActions.isNotEmpty ? allActions : null,
     );
   }
 
@@ -178,20 +200,28 @@ class ToastService extends ChangeNotifier {
     String message, {
     Duration? duration,
     bool? showProgress,
-    String? actionLabel,
-    VoidCallback? onAction,
+    @Deprecated('Use actions instead') String? actionLabel,
+    @Deprecated('Use actions instead') VoidCallback? onAction,
     VoidCallback? onDismiss,
     bool autoDismiss = true,
+    List<ToastAction>? actions,
   }) {
+    final allActions = <ToastAction>[];
+    if (actions != null) {
+      allActions.addAll(actions);
+    }
+    if (actionLabel != null && onAction != null) {
+      allActions.add(ToastAction(label: actionLabel, onPressed: onAction));
+    }
+
     showDefault(
       title: title,
       message: message,
       type: ToastType.error,
       duration: autoDismiss ? (duration ?? _config?.defaultDuration) : null,
       showProgress: showProgress,
-      actionLabel: actionLabel,
-      onAction: onAction,
       onDismiss: onDismiss,
+      actions: allActions.isNotEmpty ? allActions : null,
     );
   }
 
@@ -203,20 +233,28 @@ class ToastService extends ChangeNotifier {
     String message, {
     Duration? duration,
     bool? showProgress,
-    String? actionLabel,
-    VoidCallback? onAction,
+    @Deprecated('Use actions instead') String? actionLabel,
+    @Deprecated('Use actions instead') VoidCallback? onAction,
     VoidCallback? onDismiss,
     bool autoDismiss = true,
+    List<ToastAction>? actions,
   }) {
+    final allActions = <ToastAction>[];
+    if (actions != null) {
+      allActions.addAll(actions);
+    }
+    if (actionLabel != null && onAction != null) {
+      allActions.add(ToastAction(label: actionLabel, onPressed: onAction));
+    }
+
     showDefault(
       title: title,
       message: message,
       type: ToastType.warning,
       duration: autoDismiss ? (duration ?? _config?.defaultDuration) : null,
       showProgress: showProgress,
-      actionLabel: actionLabel,
-      onAction: onAction,
       onDismiss: onDismiss,
+      actions: allActions.isNotEmpty ? allActions : null,
     );
   }
 
@@ -228,20 +266,28 @@ class ToastService extends ChangeNotifier {
     String message, {
     Duration? duration,
     bool? showProgress,
-    String? actionLabel,
-    VoidCallback? onAction,
+    @Deprecated('Use actions instead') String? actionLabel,
+    @Deprecated('Use actions instead') VoidCallback? onAction,
     VoidCallback? onDismiss,
     bool autoDismiss = true,
+    List<ToastAction>? actions,
   }) {
+    final allActions = <ToastAction>[];
+    if (actions != null) {
+      allActions.addAll(actions);
+    }
+    if (actionLabel != null && onAction != null) {
+      allActions.add(ToastAction(label: actionLabel, onPressed: onAction));
+    }
+
     showDefault(
       title: title,
       message: message,
       type: ToastType.info,
       duration: autoDismiss ? (duration ?? _config?.defaultDuration) : null,
       showProgress: showProgress,
-      actionLabel: actionLabel,
-      onAction: onAction,
       onDismiss: onDismiss,
+      actions: allActions.isNotEmpty ? allActions : null,
     );
   }
 

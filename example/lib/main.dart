@@ -1,5 +1,3 @@
-
-
 import 'dart:ui';
 
 import 'package:awesome_toast/awesome_toast.dart';
@@ -30,13 +28,13 @@ class MyApp extends StatelessWidget {
         titleTextStyle: const TextStyle(
             fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
         messageStyle: const TextStyle(fontSize: 14, color: Colors.black),
-        actionLabelStyle: const TextStyle(
+        buttonsActionStyle: const TextStyle(
             fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blue),
         progressColor: Colors.blue,
         progressBackgroundColor: Colors.grey,
         progressStrokeWidth: 2,
-        toastBuilder: (context, title, message, type, onAction, progress,
-            actionLabel, showProgress, dismissToast) {
+        toastBuilder: (context, title, message, type, progress, showProgress,
+            dismissToast, actions) {
           Color bgColor;
           IconData icon;
           final double opacity = 0.5;
@@ -58,10 +56,14 @@ class MyApp extends StatelessWidget {
               bgColor = Colors.blue.shade700.withValues(alpha: opacity);
               icon = Icons.info_outline_rounded;
               break;
+            case ToastType.none:
+              bgColor = Colors.black.withValues(alpha: opacity);
+              icon = Icons.sentiment_dissatisfied;
+              break;
           }
 
           return ClipRRect(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(16),
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
               child: Stack(
@@ -79,7 +81,7 @@ class MyApp extends StatelessWidget {
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                     decoration: BoxDecoration(
                       color: bgColor,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
                           color: bgColor,
@@ -90,11 +92,11 @@ class MyApp extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        // Icon(icon, color: Colors.white, size: 28),
-                        // SizedBox(width: 16),
+                        Icon(icon, color: Colors.white, size: 28),
+                        SizedBox(width: 16),
                         Expanded(
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
@@ -113,17 +115,45 @@ class MyApp extends StatelessWidget {
                                   fontSize: 14,
                                 ),
                               ),
-                              if (actionLabel != null && onAction != null)
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(0.0),
-                                      child: TextButton(
-                                          onPressed: onAction,
-                                          child: Text(actionLabel)),
-                                    ),
-                                  ],
+                              if (actions?.isNotEmpty ?? false)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 16.0),
+                                  child: Wrap(
+                                    runAlignment: WrapAlignment.end,
+                                    alignment: WrapAlignment.end,
+                                    crossAxisAlignment:
+                                        WrapCrossAlignment.end,
+                                    spacing: 8,
+                                    runSpacing: 8,
+                                    children: actions!
+                                        .map(
+                                          (action) => Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                              border: Border.all(
+                                                color: Colors.white,
+                                                width: 1,
+                                              ),
+                                            ),
+                                            child: TextButton(
+                                              onPressed: () {
+                                                action.onPressed();
+                                                dismissToast?.call();
+                                              },
+                                              child: Text(
+                                                action.label,
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                        .toList(),
+                                  ),
                                 )
                             ],
                           ),
@@ -143,12 +173,30 @@ class MyApp extends StatelessWidget {
                             value: value,
                             color: ToastService.instance.config?.progressColor,
                             backgroundColor: ToastService
-                                .instance.config?.progressBackgroundColor,
-                            minHeight: 5,
+                                .instance.config?.progressBackgroundColor
+                                ?.withValues(alpha: 0.5),
+                            minHeight: 4,
                           );
                         },
                       ),
                     ),
+                  Positioned(
+                    top: 4,
+                    right: 4,
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.close,
+                        size: 18,
+                        color: Colors.white,
+                      ),
+                      onPressed: dismissToast,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(
+                        minWidth: 24,
+                        minHeight: 24,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -305,24 +353,28 @@ class _DemoScreenState extends State<DemoScreen> {
                 OutlinedButton.icon(
                   onPressed: () {
                     ToastService.instance.show(
-                        contentBuilder: (context, progress, dismissToast) => DefaultToast(
+                        contentBuilder: (context, progress, dismissToast) =>
+                            DefaultToast(
                               title: 'Custom Toast',
                               message: 'This toast uses DefaultToast widget',
                               type: ToastType.info,
                               backgroundColor: Colors.purple.shade100,
                               icon: Icons.star,
-                              hasActionLabel: true,
+                              actions: [
+                                ToastAction(
+                                  label: 'Dismiss',
+                                  onPressed: () {
+                                    ToastService.instance.success(
+                                      'Dismissed',
+                                      'Toast has been dismissed.',
+                                    );
+                                  },
+                                ),
+                              ],
                               onDismiss: dismissToast,
                             ),
                         duration: const Duration(seconds: 5),
-                        showProgress: true,
-                        actionLabel: 'Dismiss',
-                        onAction: () {
-                          ToastService.instance.success(
-                            'Dismissed',
-                            'Toast has been dismissed.',
-                          );
-                        });
+                        showProgress: true);
                   },
                   icon: const Icon(Icons.palette),
                   label: const Text('Custom Styled Toast'),
@@ -334,13 +386,26 @@ class _DemoScreenState extends State<DemoScreen> {
                       'Action Required',
                       'This toast will not be dismissed automatically.',
                       autoDismiss: false,
-                      actionLabel: 'Do SomeThing',
-                      onAction: () {
-                        ToastService.instance.success(
-                          'Done!',
-                          'Action done.',
-                        );
-                      },
+                      actions: [
+                        ToastAction(
+                          label: 'Do Something',
+                          onPressed: () {
+                            ToastService.instance.success(
+                              'Done!',
+                              'Action done.',
+                            );
+                          },
+                        ),
+                        ToastAction(
+                          label: 'Cancel',
+                          onPressed: () {
+                            ToastService.instance.error(
+                              'Cancelled',
+                              'Action has been cancelled.',
+                            );
+                          },
+                        ),
+                      ],
                     );
                   },
                   icon: const Icon(Icons.undo),
@@ -354,13 +419,17 @@ class _DemoScreenState extends State<DemoScreen> {
                       'Are you sure you want to proceed?',
                       duration: const Duration(seconds: 10),
                       showProgress: true,
-                      actionLabel: 'Confirm',
-                      onAction: () {
-                        ToastService.instance.success(
-                          'Confirmed',
-                          'Action has been completed.',
-                        );
-                      },
+                      actions: [
+                        ToastAction(
+                          label: 'Confirm',
+                          onPressed: () {
+                            ToastService.instance.success(
+                              'Confirmed',
+                              'Action has been completed.',
+                            );
+                          },
+                        ),
+                      ],
                     );
                   },
                   icon: const Icon(Icons.done_all),
@@ -394,7 +463,8 @@ class _DemoScreenState extends State<DemoScreen> {
                 OutlinedButton.icon(
                   onPressed: () {
                     ToastService.instance.show(
-                      contentBuilder: (context, progress, dismissToast) => DefaultToast(
+                      contentBuilder: (context, progress, dismissToast) =>
+                          DefaultToast(
                         title: 'Custom Style',
                         message: 'This toast has custom text styles.',
                         type: ToastType.info,
@@ -411,18 +481,22 @@ class _DemoScreenState extends State<DemoScreen> {
                 OutlinedButton.icon(
                   onPressed: () {
                     ToastService.instance.show(
-                      contentBuilder: (context, progress, dismissToast) => DefaultToast(
+                      contentBuilder: (context, progress, dismissToast) =>
+                          DefaultToast(
                         title: 'Custom Action',
                         message: 'This toast has a custom action button style.',
                         type: ToastType.info,
-                        hasActionLabel: true,
+                        actions: [
+                          ToastAction(
+                            label: 'Custom',
+                            onPressed: () {},
+                          ),
+                        ],
                         onDismiss: dismissToast,
                       ),
                       duration: const Duration(seconds: 10),
                       showProgress: true,
-                      actionLabel: 'Custom',
-                      onAction: () {},
-                      actionLabelStyle: const TextStyle(
+                      buttonsActionStyle: const TextStyle(
                           color: Colors.red, fontWeight: FontWeight.bold),
                     );
                   },
@@ -433,7 +507,8 @@ class _DemoScreenState extends State<DemoScreen> {
                 OutlinedButton.icon(
                   onPressed: () {
                     ToastService.instance.show(
-                      contentBuilder: (context, progress, dismissToast) => DefaultToast(
+                      contentBuilder: (context, progress, dismissToast) =>
+                          DefaultToast(
                         title: 'Custom Progress',
                         message: 'This toast has a custom progress indicator.',
                         type: ToastType.info,
