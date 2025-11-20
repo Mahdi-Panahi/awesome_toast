@@ -1,4 +1,4 @@
-import 'dart:ui';
+
 
 import 'package:flutter/material.dart';
 
@@ -125,8 +125,7 @@ class _ToastStackWidgetState extends State<ToastStackWidget> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.sizeOf(context).width;
-    final calculatedWidth =
-        widget.config.width ??
+    final calculatedWidth = widget.config.width ??
         (screenWidth * 0.9).clamp(
           widget.config.minWidth,
           widget.config.maxWidth,
@@ -213,8 +212,7 @@ class _ToastStackLayoutState extends State<_ToastStackLayout> {
     return ListenableBuilder(
       listenable: widget.hoverNotifier,
       builder: (context, _) {
-        final isStacked =
-            widget.items.length > widget.config.stackThreshold &&
+        final isStacked = widget.items.length > widget.config.stackThreshold &&
             !widget.hoverNotifier.isHovered;
 
         return TweenAnimationBuilder<double>(
@@ -311,9 +309,8 @@ class _ToastStackLayoutState extends State<_ToastStackLayout> {
           opacity: opacity,
           child: Transform.scale(
             scale: scale,
-            alignment: widget.isTop
-                ? Alignment.topCenter
-                : Alignment.bottomCenter,
+            alignment:
+                widget.isTop ? Alignment.topCenter : Alignment.bottomCenter,
             child: LayoutBuilder(
               builder: (context, constraints) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -377,6 +374,7 @@ class _ToastItemWidgetState extends State<_ToastItemWidget>
   late Animation<Offset> _slideAnimation;
   late Animation<double> _fadeAnimation;
   late AnimationController _progressController;
+  late final ValueNotifier<double> _progressNotifier;
 
   final ValueNotifier<double> _dragOffsetNotifier = ValueNotifier(0);
   bool _isDragging = false;
@@ -390,10 +388,10 @@ class _ToastItemWidgetState extends State<_ToastItemWidget>
       duration: const Duration(milliseconds: 200),
     );
 
-    _slideAnimation = Tween<Offset>(begin: _getEntryOffset(), end: Offset.zero)
-        .animate(
-          CurvedAnimation(parent: _controller, curve: Curves.easeInOutQuart),
-        );
+    _slideAnimation =
+        Tween<Offset>(begin: _getEntryOffset(), end: Offset.zero).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOutQuart),
+    );
 
     _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(parent: _controller, curve: const Interval(0, 0.5)),
@@ -403,6 +401,11 @@ class _ToastItemWidgetState extends State<_ToastItemWidget>
       vsync: this,
       duration: widget.item.duration,
     );
+
+    _progressNotifier = ValueNotifier<double>(0);
+    _progressController.addListener(() {
+      _progressNotifier.value = _progressController.value;
+    });
 
     if (widget.item.duration != null) {
       _progressController.addStatusListener((status) {
@@ -479,6 +482,7 @@ class _ToastItemWidgetState extends State<_ToastItemWidget>
     _controller.dispose();
     _progressController.dispose();
     _dragOffsetNotifier.dispose();
+    _progressNotifier.dispose();
     super.dispose();
   }
 
@@ -526,93 +530,55 @@ class _ToastItemWidgetState extends State<_ToastItemWidget>
   Widget _buildContent() {
     Widget content = Container(
       margin: const EdgeInsets.only(bottom: 8),
-      child: Material(
-        elevation: 4,
-        borderRadius: BorderRadius.circular(8),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Stack(
-            alignment: Alignment.topLeft,
-            clipBehavior: Clip.none,
-            children: [
-              widget.item.child,
-
-              // if(widget.item.actionLabel != null)
-              //   Container(
-              //     width: 100,
-              //     height: 200,
-              //     color: Colors.red,
-              //   ),
-              if (widget.item.showProgress && widget.item.duration != null)
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  left: 0,
-                  child: AnimatedBuilder(
-                    animation: _progressController,
-                    builder: (context, child) {
-                      return LinearProgressIndicator(
-                        value: _progressController.value,
-                        color:
-                            widget.item.progressColor ??
-                            widget.config.progressColor,
-                        backgroundColor:
-                            widget.item.progressBackgroundColor ??
-                            widget.config.progressBackgroundColor,
-                        minHeight:
-                            widget.item.progressStrokeWidth ??
-                            widget.config.progressStrokeWidth,
-                      );
-                    },
-                  ),
-                ),
-              if (widget.item.actionLabel != null)
-                Positioned(
-                  right: 8,
-                  bottom: 8,
-                  child: TextButton(
-                    onPressed: () {
-                      if (widget.item.onAction != null) {
-                        widget.item.onAction!();
-                      }
-                      _dismiss();
-                    },
-                    child: Text(
-                      widget.item.actionLabel!,
-                      style:
-                          widget.item.actionLabelStyle ??
-                          widget.config.actionLabelStyle,
-                    ),
-                  ),
-                ),
-              Positioned(
-                top: 4,
-                right: 4,
-                child: IconButton(
-                  icon: const Icon(Icons.close, size: 18),
-                  onPressed: _dismiss,
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(
-                    minWidth: 24,
-                    minHeight: 24,
-                  ),
+      child: Stack(
+        alignment: Alignment.topLeft,
+        clipBehavior: Clip.none,
+        children: [
+          widget.item.contentBuilder(context, _progressNotifier, _dismiss),
+          if (widget.item.actionLabel != null)
+            Positioned(
+              right: 8,
+              bottom: 8,
+              child: TextButton(
+                onPressed: () {
+                  if (widget.item.onAction != null) {
+                    widget.item.onAction!();
+                  }
+                  _dismiss();
+                },
+                child: Text(
+                  widget.item.actionLabel!,
+                  style: widget.item.actionLabelStyle ??
+                      widget.config.actionLabelStyle,
                 ),
               ),
-            ],
+            ),
+          Positioned(
+            top: 4,
+            right: 4,
+            child: IconButton(
+              icon: const Icon(Icons.close, size: 18),
+              onPressed: _dismiss,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(
+                minWidth: 24,
+                minHeight: 24,
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
 
-    if (widget.showBlur) {
-      content = ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
-          child: content,
-        ),
-      );
-    }
+    // if (widget.showBlur) {
+    //   content = ClipRRect(
+    //     borderRadius: BorderRadius.circular(8),
+    //     child: BackdropFilter(
+    //       filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+    //       child: content,
+    //     ),
+    //   );
+    // }
 
     return content;
   }

@@ -46,11 +46,16 @@ class ToastStackConfig {
 
   /// Custom toast builder (if null, uses DefaultToast)
   final Widget Function(
-      BuildContext context,
-      String title,
-      String message,
-      ToastType type,
-      )? toastBuilder;
+    BuildContext context,
+    String title,
+    String message,
+    ToastType type,
+    VoidCallback? onAction,
+    ValueNotifier<double>? progress,
+    String? actionLabel,
+    bool? showProgress,
+    VoidCallback? dismissToast,
+  )? toastBuilder;
 
   /// Default title text style
   final TextStyle? titleTextStyle;
@@ -94,8 +99,8 @@ class ToastStackConfig {
   })  : assert(stackThreshold > 0, 'stackThreshold must be greater than 0'),
         assert(stackOffset >= 0, 'stackOffset must be non-negative'),
         assert(
-        stackScale > 0 && stackScale <= 1,
-        'stackScale must be between 0 and 1',
+          stackScale > 0 && stackScale <= 1,
+          'stackScale must be between 0 and 1',
         ),
         assert(width == null || width > 0, 'width must be positive or null'),
         assert(minWidth > 0, 'minWidth must be positive'),
@@ -117,11 +122,16 @@ class ToastStackConfig {
     EdgeInsets? margin,
     bool? showProgressByDefault,
     Widget Function(
-        BuildContext context,
-        String title,
-        String message,
-        ToastType type,
-        )? toastBuilder,
+      BuildContext context,
+      String title,
+      String message,
+      ToastType type,
+      VoidCallback? onAction,
+      ValueNotifier<double>? progress,
+      String? actionLabel,
+      bool? showProgress,
+      VoidCallback? dismissToast,
+    )? toastBuilder,
     TextStyle? titleTextStyle,
     TextStyle? messageStyle,
     TextStyle? actionLabelStyle,
@@ -143,13 +153,14 @@ class ToastStackConfig {
       maxWidth: maxWidth ?? this.maxWidth,
       margin: margin ?? this.margin,
       showProgressByDefault:
-      showProgressByDefault ?? this.showProgressByDefault,
+          showProgressByDefault ?? this.showProgressByDefault,
       toastBuilder: toastBuilder ?? this.toastBuilder,
       titleTextStyle: titleTextStyle ?? this.titleTextStyle,
       messageStyle: messageStyle ?? this.messageStyle,
       actionLabelStyle: actionLabelStyle ?? this.actionLabelStyle,
       progressColor: progressColor ?? this.progressColor,
-      progressBackgroundColor: progressBackgroundColor ?? this.progressBackgroundColor,
+      progressBackgroundColor:
+          progressBackgroundColor ?? this.progressBackgroundColor,
       progressStrokeWidth: progressStrokeWidth ?? this.progressStrokeWidth,
     );
   }

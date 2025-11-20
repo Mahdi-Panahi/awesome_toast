@@ -42,8 +42,6 @@ class ToastProvider extends StatefulWidget {
 
   @override
   State<ToastProvider> createState() => _ToastProviderState();
-
-
 }
 
 class _ToastProviderState extends State<ToastProvider> {

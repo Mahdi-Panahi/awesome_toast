@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 
+/// A builder function for creating the content of a toast.
+///
+/// It provides the [BuildContext] and an optional [ValueNotifier<double>]
+/// that can be used to listen to the progress of the toast's duration.
+typedef ToastContentBuilder = Widget Function(
+    BuildContext context, ValueNotifier<double>? progress, VoidCallback? dismissToast);
+
 /// Types of default toast messages
 enum ToastType { success, error, warning, info }
 
@@ -8,8 +15,8 @@ class ToastItem {
   /// Unique identifier
   final String key;
 
-  /// Toast content widget
-  final Widget child;
+  /// Builder for the toast content
+  final ToastContentBuilder contentBuilder;
 
   /// How long toast should remain visible (null = stays until manually dismissed)
   final Duration? duration;
@@ -40,7 +47,7 @@ class ToastItem {
 
   ToastItem({
     required this.key,
-    required this.child,
+    required this.contentBuilder,
     this.duration,
     this.onDismiss,
     this.showProgress = false,

@@ -49,6 +49,9 @@ class DefaultToast extends StatelessWidget {
   /// A boolean to indicate if the toast has an action label.
   final bool hasActionLabel;
 
+  /// Callback when the toast is dismissed.
+  final VoidCallback? onDismiss;
+
   /// Creates a default toast widget.
   ///
   /// The [title] and [message] are required. Other parameters are optional
@@ -65,6 +68,7 @@ class DefaultToast extends StatelessWidget {
     this.padding,
     this.borderRadius,
     this.hasActionLabel = false,
+    this.onDismiss,
   });
 
   @override
@@ -81,26 +85,22 @@ class DefaultToast extends StatelessWidget {
     } else {
       switch (type) {
         case ToastType.success:
-          effectiveBackgroundColor =
-              backgroundColor ??
+          effectiveBackgroundColor = backgroundColor ??
               (isDark ? Colors.green.shade900 : Colors.green.shade100);
           effectiveIcon = icon ?? Icons.check_circle;
           break;
         case ToastType.error:
-          effectiveBackgroundColor =
-              backgroundColor ??
+          effectiveBackgroundColor = backgroundColor ??
               (isDark ? Colors.red.shade900 : Colors.red.shade100);
           effectiveIcon = icon ?? Icons.error;
           break;
         case ToastType.warning:
-          effectiveBackgroundColor =
-              backgroundColor ??
+          effectiveBackgroundColor = backgroundColor ??
               (isDark ? Colors.orange.shade900 : Colors.orange.shade100);
           effectiveIcon = icon ?? Icons.warning;
           break;
         case ToastType.info:
-          effectiveBackgroundColor =
-              backgroundColor ??
+          effectiveBackgroundColor = backgroundColor ??
               (isDark ? Colors.blue.shade900 : Colors.blue.shade100);
           effectiveIcon = icon ?? Icons.info;
           break;
@@ -124,8 +124,7 @@ class DefaultToast extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style:
-                      titleStyle ??
+                  style: titleStyle ??
                       ToastService.instance.config?.titleTextStyle ??
                       const TextStyle(
                         fontWeight: FontWeight.bold,
@@ -135,8 +134,7 @@ class DefaultToast extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   message,
-                  style:
-                      messageStyle ??
+                  style: messageStyle ??
                       ToastService.instance.config?.messageStyle ??
                       const TextStyle(fontSize: 14),
                 ),
