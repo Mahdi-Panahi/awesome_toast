@@ -43,6 +43,9 @@ class ToastItem {
   /// Custom stroke width for the progress indicator
   final double? progressStrokeWidth;
 
+  /// Used to externally control the progress of the toast.
+  final ValueNotifier<double>? progressNotifier;
+
   ToastItem({
     required this.key,
     required this.contentBuilder,
@@ -54,5 +57,6 @@ class ToastItem {
     this.progressColor,
     this.progressBackgroundColor,
     this.progressStrokeWidth,
+    this.progressNotifier,
   });
 }

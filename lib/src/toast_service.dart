@@ -65,6 +65,7 @@ class ToastService extends ChangeNotifier {
     Color? progressBackgroundColor,
     double? progressStrokeWidth,
     List<ToastAction>? actions,
+    ValueNotifier<double>? progressNotifier,
   }) {
     final key = 'toast_${_counter++}_${DateTime.now().millisecondsSinceEpoch}';
 
@@ -93,6 +94,7 @@ class ToastService extends ChangeNotifier {
       progressColor: progressColor,
       progressBackgroundColor: progressBackgroundColor,
       progressStrokeWidth: progressStrokeWidth,
+      progressNotifier: progressNotifier,
     );
 
     _items.insert(0, item);
@@ -117,6 +119,7 @@ class ToastService extends ChangeNotifier {
     Color? progressBackgroundColor,
     double? progressStrokeWidth,
     List<ToastAction>? actions,
+    ValueNotifier<double>? progressNotifier,
   }) {
     final allActions = <ToastAction>[];
     if (actions != null) {
@@ -156,6 +159,7 @@ class ToastService extends ChangeNotifier {
       progressColor: progressColor,
       progressBackgroundColor: progressBackgroundColor,
       progressStrokeWidth: progressStrokeWidth,
+      progressNotifier: progressNotifier,
     );
   }
 
@@ -172,6 +176,7 @@ class ToastService extends ChangeNotifier {
     VoidCallback? onDismiss,
     bool autoDismiss = true,
     List<ToastAction>? actions,
+    ValueNotifier<double>? progressNotifier,
   }) {
     final allActions = <ToastAction>[];
     if (actions != null) {
@@ -189,6 +194,7 @@ class ToastService extends ChangeNotifier {
       showProgress: showProgress,
       onDismiss: onDismiss,
       actions: allActions.isNotEmpty ? allActions : null,
+      progressNotifier: progressNotifier,
     );
   }
 
@@ -205,6 +211,7 @@ class ToastService extends ChangeNotifier {
     VoidCallback? onDismiss,
     bool autoDismiss = true,
     List<ToastAction>? actions,
+    ValueNotifier<double>? progressNotifier,
   }) {
     final allActions = <ToastAction>[];
     if (actions != null) {
@@ -222,6 +229,7 @@ class ToastService extends ChangeNotifier {
       showProgress: showProgress,
       onDismiss: onDismiss,
       actions: allActions.isNotEmpty ? allActions : null,
+      progressNotifier: progressNotifier,
     );
   }
 
@@ -238,6 +246,7 @@ class ToastService extends ChangeNotifier {
     VoidCallback? onDismiss,
     bool autoDismiss = true,
     List<ToastAction>? actions,
+    ValueNotifier<double>? progressNotifier,
   }) {
     final allActions = <ToastAction>[];
     if (actions != null) {
@@ -255,6 +264,7 @@ class ToastService extends ChangeNotifier {
       showProgress: showProgress,
       onDismiss: onDismiss,
       actions: allActions.isNotEmpty ? allActions : null,
+      progressNotifier: progressNotifier,
     );
   }
 
@@ -271,6 +281,7 @@ class ToastService extends ChangeNotifier {
     VoidCallback? onDismiss,
     bool autoDismiss = true,
     List<ToastAction>? actions,
+    ValueNotifier<double>? progressNotifier,
   }) {
     final allActions = <ToastAction>[];
     if (actions != null) {
@@ -288,8 +299,10 @@ class ToastService extends ChangeNotifier {
       showProgress: showProgress,
       onDismiss: onDismiss,
       actions: allActions.isNotEmpty ? allActions : null,
+      progressNotifier: progressNotifier,
     );
   }
+
 
   void _removeToast(String key) {
     _items.removeWhere((item) => item.key == key);

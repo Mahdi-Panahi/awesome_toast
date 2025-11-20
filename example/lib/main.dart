@@ -57,7 +57,7 @@ class MyApp extends StatelessWidget {
               icon = Icons.info_outline_rounded;
               break;
             case ToastType.none:
-              bgColor = Colors.black.withValues(alpha: opacity);
+              bgColor = Colors.white70.withValues(alpha: opacity);
               icon = Icons.sentiment_dissatisfied;
               break;
           }
@@ -121,8 +121,7 @@ class MyApp extends StatelessWidget {
                                   child: Wrap(
                                     runAlignment: WrapAlignment.end,
                                     alignment: WrapAlignment.end,
-                                    crossAxisAlignment:
-                                        WrapCrossAlignment.end,
+                                    crossAxisAlignment: WrapCrossAlignment.end,
                                     spacing: 8,
                                     runSpacing: 8,
                                     children: actions!
@@ -434,6 +433,59 @@ class _DemoScreenState extends State<DemoScreen> {
                   },
                   icon: const Icon(Icons.done_all),
                   label: const Text('Toast with Action & Progress'),
+                ),
+              ]),
+              const SizedBox(height: 24),
+              _buildSection('Progress value changes Test', [
+                OutlinedButton.icon(
+                  onPressed: () {
+                    final progressNotifier = ValueNotifier<double>(0.0);
+                    VoidCallback? action = () {};
+                    ToastService.instance.show(
+                      contentBuilder: (context, progress, dismissToast) {
+                      action = dismissToast;
+                       return   DefaultToast(
+                      title: 'Progress Test',
+                      message: 'This toast has a progress indicator.',
+                      type: ToastType.none,
+                      actions: [
+                        ToastAction(
+                          label: 'Cancel',
+                          onPressed: () {
+                            ToastService.instance.error(
+                              'Cancelled',
+                              'Download has been cancelled.',
+                            );
+                            progressNotifier.dispose();
+                            dismissToast?.call();
+                          },
+                        ),
+                      ],
+                    );},
+                      showProgress: true,
+                      progressNotifier: progressNotifier,
+                    );
+
+                    // Simulate a download
+                    Future.doWhile(() async {
+                      if (progressNotifier.value >= 1.0) {
+                        return false;
+                      }
+                      await Future.delayed(const Duration(milliseconds: 100));
+                      if (progressNotifier.value < 1.0) {
+                          progressNotifier.value += 0.05;
+                      }
+                      if (progressNotifier.value >= 1.0) {
+                        ToastService.instance.success('Downloaded', 'Your download is complete.');
+                        action?.call();
+                        progressNotifier.dispose();
+                        return false;
+                      }
+                        return true;
+                    });
+                  },
+                  icon: const Icon(Icons.download),
+                  label: const Text('Simulate Download'),
                 ),
               ]),
               const SizedBox(height: 24),

@@ -397,22 +397,26 @@ class _ToastItemWidgetState extends State<_ToastItemWidget>
       CurvedAnimation(parent: _controller, curve: const Interval(0, 0.5)),
     );
 
-    _progressController = AnimationController(
-      vsync: this,
-      duration: widget.item.duration,
-    );
+    _progressNotifier = widget.item.progressNotifier ?? ValueNotifier<double>(0);
 
-    _progressNotifier = ValueNotifier<double>(0);
-    _progressController.addListener(() {
-      _progressNotifier.value = _progressController.value;
-    });
-
-    if (widget.item.duration != null) {
-      _progressController.addStatusListener((status) {
-        if (status == AnimationStatus.completed && mounted && !_isTimerPaused) {
-          _dismiss();
-        }
+    if (widget.item.progressNotifier == null) {
+      _progressController = AnimationController(
+        vsync: this,
+        duration: widget.item.duration,
+      );
+      _progressController.addListener(() {
+        _progressNotifier.value = _progressController.value;
       });
+
+      if (widget.item.duration != null) {
+        _progressController.addStatusListener((status) {
+          if (status == AnimationStatus.completed &&
+              mounted &&
+              !_isTimerPaused) {
+            _dismiss();
+          }
+        });
+      }
     }
 
     _controller.forward();
@@ -435,13 +439,15 @@ class _ToastItemWidgetState extends State<_ToastItemWidget>
   }
 
   void _startTimer() {
-    if (widget.item.duration != null && !_isTimerPaused) {
+    if (widget.item.progressNotifier == null &&
+        widget.item.duration != null &&
+        !_isTimerPaused) {
       _progressController.forward();
     }
   }
 
   void setTimerPaused(bool paused) {
-    if (_isTimerPaused != paused) {
+    if (widget.item.progressNotifier == null && _isTimerPaused != paused) {
       _isTimerPaused = paused;
       if (widget.item.duration != null) {
         if (paused) {
@@ -480,7 +486,9 @@ class _ToastItemWidgetState extends State<_ToastItemWidget>
   @override
   void dispose() {
     _controller.dispose();
-    _progressController.dispose();
+    if (widget.item.progressNotifier == null) {
+      _progressController.dispose();
+    }
     _dragOffsetNotifier.dispose();
     _progressNotifier.dispose();
     super.dispose();
