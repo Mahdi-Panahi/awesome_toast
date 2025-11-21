@@ -52,7 +52,6 @@ class ToastStackConfig {
     String message,
     ToastType type,
     ValueNotifier<double>? progress,
-    bool? showProgress,
     VoidCallback? dismissToast,
     List<ToastAction>? actions,
   )? toastBuilder;
@@ -127,7 +126,6 @@ class ToastStackConfig {
       String message,
       ToastType type,
       ValueNotifier<double>? progress,
-      bool? showProgress,
       VoidCallback? dismissToast,
       List<ToastAction>? actions,
     )? toastBuilder,

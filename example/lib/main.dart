@@ -201,9 +201,10 @@ class _DemoScreenState extends State<DemoScreen> {
                                 ),
                               ],
                               onDismiss: dismissToast,
+                              showProgress: true,
+                              progress: progress,
                             ),
-                        duration: const Duration(seconds: 5),
-                        showProgress: true);
+                        duration: const Duration(seconds: 5));
                   },
                   icon: const Icon(Icons.palette),
                   label: const Text('Custom Styled Toast'),
@@ -354,9 +355,19 @@ class _DemoScreenState extends State<DemoScreen> {
                         message: 'This toast has custom text styles.',
                         type: ToastType.info,
                         onDismiss: dismissToast,
+                        showProgress: true,
+                        progress: progress,
+                        titleTextStyle: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                        messageTextStyle: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
                       ),
                       duration: const Duration(seconds: 5),
-                      showProgress: true,
                     );
                   },
                   icon: const Icon(Icons.text_fields),
@@ -378,11 +389,12 @@ class _DemoScreenState extends State<DemoScreen> {
                           ),
                         ],
                         onDismiss: dismissToast,
+                        buttonsActionStyle: const TextStyle(
+                            color: Colors.red, fontWeight: FontWeight.bold),
+                        showProgress: true,
+                        progress: progress,
                       ),
                       duration: const Duration(seconds: 10),
-                      showProgress: true,
-                      buttonsActionStyle: const TextStyle(
-                          color: Colors.red, fontWeight: FontWeight.bold),
                     );
                   },
                   icon: const Icon(Icons.touch_app),
@@ -398,12 +410,13 @@ class _DemoScreenState extends State<DemoScreen> {
                         message: 'This toast has a custom progress indicator.',
                         type: ToastType.info,
                         onDismiss: dismissToast,
+                        progressColor: Colors.green,
+                        progressBackgroundColor: Colors.grey.withAlpha((0.5 * 255).round()),
+                        progressStrokeWidth: 10,
+                        showProgress: true,
+                        progress: progress,
                       ),
                       duration: const Duration(seconds: 5),
-                      showProgress: true,
-                      progressColor: Colors.red,
-                      progressBackgroundColor: Colors.blue,
-                      progressStrokeWidth: 10,
                     );
                   },
                   icon: const Icon(Icons.linear_scale),

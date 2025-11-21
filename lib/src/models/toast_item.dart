@@ -25,23 +25,8 @@ class ToastItem {
   /// Callback when toast is dismissed
   final VoidCallback? onDismiss;
 
-  /// Whether to show progress indicator
-  final bool showProgress;
-
   /// Optional list of action buttons
   final List<ToastAction>? actions;
-
-  /// Custom text style for the action buttons
-  final TextStyle? buttonsActionStyle;
-
-  /// Custom color for the progress indicator
-  final Color? progressColor;
-
-  /// Custom background color for the progress indicator
-  final Color? progressBackgroundColor;
-
-  /// Custom stroke width for the progress indicator
-  final double? progressStrokeWidth;
 
   /// Used to externally control the progress of the toast.
   final ValueNotifier<double>? progressNotifier;
@@ -51,12 +36,7 @@ class ToastItem {
     required this.contentBuilder,
     this.duration,
     this.onDismiss,
-    this.showProgress = false,
     this.actions,
-    this.buttonsActionStyle,
-    this.progressColor,
-    this.progressBackgroundColor,
-    this.progressStrokeWidth,
     this.progressNotifier,
   });
 }

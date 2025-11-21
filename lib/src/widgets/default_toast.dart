@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:awesome_toast/awesome_toast.dart';
-import 'package:awesome_toast/src/toast_service.dart';
 import 'package:flutter/material.dart';
 
 /// Default toast widget
@@ -48,6 +47,15 @@ class DefaultToast extends StatelessWidget {
   /// Padding of the toast
   final EdgeInsetsGeometry? padding;
 
+  /// Custom text style for the action buttons
+  final TextStyle? buttonsActionStyle;
+
+  /// Custom text style for the title
+  final TextStyle? titleTextStyle;
+
+  /// Custom text style for the message
+  final TextStyle? messageTextStyle;
+
   const DefaultToast({
     super.key,
     required this.title,
@@ -64,6 +72,9 @@ class DefaultToast extends StatelessWidget {
     this.progressStrokeWidth,
     this.borderRadius,
     this.padding,
+    this.buttonsActionStyle,
+    this.titleTextStyle,
+    this.messageTextStyle,
   });
 
   @override
@@ -79,19 +90,19 @@ class DefaultToast extends StatelessWidget {
     } else {
       switch (type) {
         case ToastType.success:
-          bgColor = Colors.green.shade700.withValues(alpha: opacity);
+          bgColor = Colors.green.shade700.withAlpha((opacity * 255).round());
           break;
         case ToastType.error:
-          bgColor = Colors.red.shade700.withValues(alpha: opacity);
+          bgColor = Colors.red.shade700.withAlpha((opacity * 255).round());
           break;
         case ToastType.warning:
-          bgColor = Colors.orange.shade700.withValues(alpha: opacity);
+          bgColor = Colors.orange.shade700.withAlpha((opacity * 255).round());
           break;
         case ToastType.info:
-          bgColor = Colors.blue.shade700.withValues(alpha: opacity);
+          bgColor = Colors.blue.shade700.withAlpha((opacity * 255).round());
           break;
         case ToastType.none:
-          bgColor = Colors.grey.withValues(alpha: opacity);
+          bgColor = Colors.grey.withAlpha((opacity * 255).round());
           break;
       }
     }
@@ -119,6 +130,8 @@ class DefaultToast extends StatelessWidget {
     }
 
     final br = borderRadius ?? BorderRadius.circular(16);
+    final effectiveShowProgress =
+        showProgress ?? ToastService.instance.config?.showProgressByDefault ?? false;
 
     return ClipRRect(
       borderRadius: br,
@@ -160,7 +173,8 @@ class DefaultToast extends StatelessWidget {
                       children: [
                         Text(
                           title,
-                          style: config?.titleTextStyle ??
+                          style: titleTextStyle ??
+                              config?.titleTextStyle ??
                               const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -170,7 +184,8 @@ class DefaultToast extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           message,
-                          style: config?.messageStyle ??
+                          style: messageTextStyle ??
+                              config?.messageStyle ??
                               TextStyle(
                                 color: Colors.white,
                                 fontSize: 14,
@@ -202,7 +217,8 @@ class DefaultToast extends StatelessWidget {
                                         },
                                         child: Text(
                                           action.label,
-                                          style: config?.buttonsActionStyle ??
+                                          style: buttonsActionStyle ??
+                                              config?.buttonsActionStyle ??
                                               const TextStyle(
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.bold,
@@ -221,7 +237,7 @@ class DefaultToast extends StatelessWidget {
                 ],
               ),
             ),
-            if (showProgress == true && progress != null)
+            if (effectiveShowProgress == true && progress != null)
               Positioned(
                 bottom: 0,
                 right: 0,
@@ -234,7 +250,7 @@ class DefaultToast extends StatelessWidget {
                       color: progressColor ?? config?.progressColor,
                       backgroundColor: progressBackgroundColor ??
                           config?.progressBackgroundColor
-                              ?.withValues(alpha: 0.5),
+                              ?.withAlpha((0.5 * 255).round()),
                       minHeight:
                           progressStrokeWidth ?? config?.progressStrokeWidth,
                     );
