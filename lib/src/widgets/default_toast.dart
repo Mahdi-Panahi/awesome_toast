@@ -1,171 +1,265 @@
+import 'dart:ui';
+
 import 'package:awesome_toast/awesome_toast.dart';
+import 'package:awesome_toast/src/toast_service.dart';
 import 'package:flutter/material.dart';
 
-/// A default toast widget that provides a standard layout with an icon, title, and message.
-///
-/// This widget is used by [ToastService.showDefault] and can also be used directly
-/// with [ToastService.show] for custom toast content. It offers extensive
-
-/// customization options for colors, styles, and layout.
-///
-/// When used, it automatically adapts its colors to the current theme (light/dark)
-/// based on the [type], but all properties can be overridden.
+/// Default toast widget
 class DefaultToast extends StatelessWidget {
-  /// The main title of the toast.
+  /// Toast title
   final String title;
 
-  /// The detailed message of the toast.
+  /// Toast message
   final String message;
 
-  /// The type of toast, which determines the default icon and background color.
-  ///
-  /// Defaults to [ToastType.info].
+  /// Toast type
   final ToastType type;
 
-  /// Overrides the default background color.
-  final Color? backgroundColor;
-
-  /// Overrides the default icon.
-  final IconData? icon;
-
-  /// Custom text style for the title.
-  ///
-  /// If null, it falls back to [ToastStackConfig.titleTextStyle].
-  final TextStyle? titleStyle;
-
-  /// Custom text style for the message.
-  ///
-  /// If null, it falls back to [ToastStackConfig.messageStyle].
-  final TextStyle? messageStyle;
-
-  /// The padding around the toast content.
-  final EdgeInsets? padding;
-
-  /// The border radius of the toast container.
-  final BorderRadius? borderRadius;
-
-  /// Callback when the toast is dismissed.
-  final VoidCallback? onDismiss;
-
-  /// A list of [ToastAction] buttons to display on the toast.
+  /// Toast actions
   final List<ToastAction>? actions;
 
-  /// Creates a default toast widget.
-  ///
-  /// The [title] and [message] are required. Other parameters are optional
-  /// and allow for detailed customization.
+  /// Callback when toast is dismissed
+  final VoidCallback? onDismiss;
+
+  /// Background color of the toast
+  final Color? backgroundColor;
+
+  /// Icon to be displayed
+  final IconData? icon;
+
+  /// Progress indicator value notifier
+  final ValueNotifier<double>? progress;
+
+  /// Show progress indicator
+  final bool? showProgress;
+
+  /// Progress indicator color
+  final Color? progressColor;
+
+  /// Progress indicator background color
+  final Color? progressBackgroundColor;
+
+  /// Progress indicator stroke width
+  final double? progressStrokeWidth;
+
+  /// Border radius of the toast
+  final BorderRadiusGeometry? borderRadius;
+
+  /// Padding of the toast
+  final EdgeInsetsGeometry? padding;
+
   const DefaultToast({
     super.key,
     required this.title,
     required this.message,
-    this.type = ToastType.info,
+    required this.type,
+    this.actions,
+    this.onDismiss,
     this.backgroundColor,
     this.icon,
-    this.titleStyle,
-    this.messageStyle,
-    this.padding,
+    this.progress,
+    this.showProgress,
+    this.progressColor,
+    this.progressBackgroundColor,
+    this.progressStrokeWidth,
     this.borderRadius,
-    this.onDismiss,
-    this.actions,
+    this.padding,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final config = ToastService.instance.config;
+    final double opacity = 0.5;
 
-    Color effectiveBackgroundColor;
-    IconData effectiveIcon;
+    Color bgColor;
+    IconData toastIcon;
 
-    if (backgroundColor != null && icon != null) {
-      effectiveBackgroundColor = backgroundColor!;
-      effectiveIcon = icon!;
+    if (backgroundColor != null) {
+      bgColor = backgroundColor!;
     } else {
       switch (type) {
         case ToastType.success:
-          effectiveBackgroundColor = backgroundColor ??
-              (isDark ? Colors.green.shade900 : Colors.green.shade100);
-          effectiveIcon = icon ?? Icons.check_circle;
+          bgColor = Colors.green.shade700.withValues(alpha: opacity);
           break;
         case ToastType.error:
-          effectiveBackgroundColor = backgroundColor ??
-              (isDark ? Colors.red.shade900 : Colors.red.shade100);
-          effectiveIcon = icon ?? Icons.error;
+          bgColor = Colors.red.shade700.withValues(alpha: opacity);
           break;
         case ToastType.warning:
-          effectiveBackgroundColor = backgroundColor ??
-              (isDark ? Colors.orange.shade900 : Colors.orange.shade100);
-          effectiveIcon = icon ?? Icons.warning;
+          bgColor = Colors.orange.shade700.withValues(alpha: opacity);
           break;
         case ToastType.info:
-          effectiveBackgroundColor = backgroundColor ??
-              (isDark ? Colors.blue.shade900 : Colors.blue.shade100);
-          effectiveIcon = icon ?? Icons.info;
+          bgColor = Colors.blue.shade700.withValues(alpha: opacity);
           break;
         case ToastType.none:
-          effectiveBackgroundColor =
-              backgroundColor ?? (isDark ? Colors.white70 : Colors.black87);
-          effectiveIcon = icon ?? Icons.sentiment_dissatisfied;
+          bgColor = Colors.grey.withValues(alpha: opacity);
           break;
       }
     }
 
-    return Container(
-      padding: padding ?? const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: effectiveBackgroundColor,
-        borderRadius: borderRadius ?? BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          Icon(effectiveIcon, size: 24),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  title,
-                  style: titleStyle ??
-                      ToastService.instance.config?.titleTextStyle ??
-                      const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  message,
-                  style: messageStyle ??
-                      ToastService.instance.config?.messageStyle ??
-                      const TextStyle(fontSize: 14),
-                ),
-                if (actions?.isNotEmpty ?? false) ...[
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: actions!
-                        .map(
-                          (action) => TextButton(
-                            onPressed: () {
-                              action.onPressed();
-                              onDismiss?.call();
-                            },
-                            child: Text(
-                              action.label,
-                              style: ToastService
-                                  .instance.config?.buttonsActionStyle,
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                ]
-              ],
+    if (icon != null) {
+      toastIcon = icon!;
+    } else {
+      switch (type) {
+        case ToastType.success:
+          toastIcon = Icons.check_circle_outline_rounded;
+          break;
+        case ToastType.error:
+          toastIcon = Icons.error_outline_rounded;
+          break;
+        case ToastType.warning:
+          toastIcon = Icons.warning_amber_rounded;
+          break;
+        case ToastType.info:
+          toastIcon = Icons.info_outline_rounded;
+          break;
+        case ToastType.none:
+          toastIcon = Icons.sentiment_dissatisfied;
+          break;
+      }
+    }
+
+    final br = borderRadius ?? BorderRadius.circular(16);
+
+    return ClipRRect(
+      borderRadius: br,
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+        child: Stack(
+          children: [
+            Positioned(
+              right: -40,
+              bottom: -25,
+              child: Icon(
+                toastIcon,
+                color: Colors.grey,
+                size: 130,
+              ),
             ),
-          ),
-        ],
+            Container(
+              padding: padding ??
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              decoration: BoxDecoration(
+                borderRadius: br,
+                color: bgColor,
+                boxShadow: [
+                  BoxShadow(
+                    color: bgColor,
+                    blurRadius: 0,
+                    offset: const Offset(0, 0),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Icon(toastIcon, color: Colors.white, size: 28),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          title,
+                          style: config?.titleTextStyle ??
+                              const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          message,
+                          style: config?.messageStyle ??
+                              TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                              ),
+                        ),
+                        if (actions?.isNotEmpty ?? false)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 16.0),
+                            child: Wrap(
+                              runAlignment: WrapAlignment.end,
+                              alignment: WrapAlignment.end,
+                              crossAxisAlignment: WrapCrossAlignment.end,
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: actions!
+                                  .map(
+                                    (action) => Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        border: Border.all(
+                                          color: Colors.white,
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: TextButton(
+                                        onPressed: () {
+                                          action.onPressed();
+                                          onDismiss?.call();
+                                        },
+                                        child: Text(
+                                          action.label,
+                                          style: config?.buttonsActionStyle ??
+                                              const TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 14,
+                                              ),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
+                          )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (showProgress == true && progress != null)
+              Positioned(
+                bottom: 0,
+                right: 0,
+                left: 0,
+                child: ValueListenableBuilder<double>(
+                  valueListenable: progress!,
+                  builder: (context, value, child) {
+                    return LinearProgressIndicator(
+                      value: value,
+                      color: progressColor ?? config?.progressColor,
+                      backgroundColor: progressBackgroundColor ??
+                          config?.progressBackgroundColor
+                              ?.withValues(alpha: 0.5),
+                      minHeight:
+                          progressStrokeWidth ?? config?.progressStrokeWidth,
+                    );
+                  },
+                ),
+              ),
+            Positioned(
+              top: 4,
+              right: 4,
+              child: IconButton(
+                icon: const Icon(
+                  Icons.close,
+                  size: 18,
+                  color: Colors.white,
+                ),
+                onPressed: onDismiss,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(
+                  minWidth: 24,
+                  minHeight: 24,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

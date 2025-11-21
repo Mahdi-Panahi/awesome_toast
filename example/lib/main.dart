@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:awesome_toast/awesome_toast.dart';
 import 'package:flutter/material.dart';
 
@@ -21,186 +19,18 @@ class MyApp extends StatelessWidget {
         position: ToastPosition.topCenter,
         stackThreshold: 3,
         width: null,
-        defaultDuration: Duration(seconds: 5),
+        defaultDuration: const Duration(seconds: 5),
         showProgressByDefault: false,
         curve: Curves.easeInOutQuart,
         maxWidth: 340,
         titleTextStyle: const TextStyle(
-            fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
-        messageStyle: const TextStyle(fontSize: 14, color: Colors.black),
+            fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+        messageStyle: const TextStyle(fontSize: 14, color: Colors.white),
         buttonsActionStyle: const TextStyle(
-            fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blue),
+            fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
         progressColor: Colors.blue,
         progressBackgroundColor: Colors.grey,
-        progressStrokeWidth: 2,
-        toastBuilder: (context, title, message, type, progress, showProgress,
-            dismissToast, actions) {
-          Color bgColor;
-          IconData icon;
-          final double opacity = 0.5;
-
-          switch (type) {
-            case ToastType.success:
-              bgColor = Colors.green.shade700.withValues(alpha: opacity);
-              icon = Icons.check_circle_outline_rounded;
-              break;
-            case ToastType.error:
-              bgColor = Colors.red.shade700.withValues(alpha: opacity);
-              icon = Icons.error_outline_rounded;
-              break;
-            case ToastType.warning:
-              bgColor = Colors.orange.shade700.withValues(alpha: opacity);
-              icon = Icons.warning_amber_rounded;
-              break;
-            case ToastType.info:
-              bgColor = Colors.blue.shade700.withValues(alpha: opacity);
-              icon = Icons.info_outline_rounded;
-              break;
-            case ToastType.none:
-              bgColor = Colors.white70.withValues(alpha: opacity);
-              icon = Icons.sentiment_dissatisfied;
-              break;
-          }
-
-          return ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
-              child: Stack(
-                children: [
-                  Positioned(
-                    right: -40,
-                    bottom: -25,
-                    child: Icon(
-                      icon,
-                      color: Colors.grey,
-                      size: 130,
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                    decoration: BoxDecoration(
-                      color: bgColor,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: bgColor,
-                          blurRadius: 8,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(icon, color: Colors.white, size: 28),
-                        SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                title,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                message,
-                                style: TextStyle(
-                                  color: Colors.white.withValues(alpha: 0.9),
-                                  fontSize: 14,
-                                ),
-                              ),
-                              if (actions?.isNotEmpty ?? false)
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 16.0),
-                                  child: Wrap(
-                                    runAlignment: WrapAlignment.end,
-                                    alignment: WrapAlignment.end,
-                                    crossAxisAlignment: WrapCrossAlignment.end,
-                                    spacing: 8,
-                                    runSpacing: 8,
-                                    children: actions!
-                                        .map(
-                                          (action) => Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              border: Border.all(
-                                                color: Colors.white,
-                                                width: 1,
-                                              ),
-                                            ),
-                                            child: TextButton(
-                                              onPressed: () {
-                                                action.onPressed();
-                                                dismissToast?.call();
-                                              },
-                                              child: Text(
-                                                action.label,
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 14,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                        .toList(),
-                                  ),
-                                )
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  if (showProgress == true && progress != null)
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      left: 0,
-                      child: ValueListenableBuilder<double>(
-                        valueListenable: progress,
-                        builder: (context, value, child) {
-                          return LinearProgressIndicator(
-                            value: value,
-                            color: ToastService.instance.config?.progressColor,
-                            backgroundColor: ToastService
-                                .instance.config?.progressBackgroundColor
-                                ?.withValues(alpha: 0.5),
-                            minHeight: 4,
-                          );
-                        },
-                      ),
-                    ),
-                  Positioned(
-                    top: 4,
-                    right: 4,
-                    child: IconButton(
-                      icon: const Icon(
-                        Icons.close,
-                        size: 18,
-                        color: Colors.white,
-                      ),
-                      onPressed: dismissToast,
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(
-                        minWidth: 24,
-                        minHeight: 24,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
+        progressStrokeWidth: 3,
       ),
       child: MaterialApp(
         title: 'Awesome Toast Demo',
@@ -443,27 +273,29 @@ class _DemoScreenState extends State<DemoScreen> {
                     VoidCallback? action = () {};
                     ToastService.instance.show(
                       contentBuilder: (context, progress, dismissToast) {
-                      action = dismissToast;
-                       return   DefaultToast(
-                      title: 'Progress Test',
-                      message: 'This toast has a progress indicator.',
-                      type: ToastType.none,
-                      actions: [
-                        ToastAction(
-                          label: 'Cancel',
-                          onPressed: () {
-                            ToastService.instance.error(
-                              'Cancelled',
-                              'Download has been cancelled.',
-                            );
-                            progressNotifier.dispose();
-                            dismissToast?.call();
-                          },
-                        ),
-                      ],
-                    );},
-                      showProgress: true,
-                      progressNotifier: progressNotifier,
+                        action = dismissToast;
+                        return DefaultToast(
+                          title: 'Progress Test',
+                          message: 'This toast has a progress indicator.',
+                          type: ToastType.none,
+                          showProgress: true,
+                          progress: progressNotifier,
+                          icon: Icons.download,
+                          actions: [
+                            ToastAction(
+                              label: 'Cancel',
+                              onPressed: () {
+                                ToastService.instance.error(
+                                  'Cancelled',
+                                  'Download has been cancelled.',
+                                );
+                                dismissToast?.call();
+                                progressNotifier.dispose();
+                              },
+                            ),
+                          ],
+                        );
+                      },
                     );
 
                     // Simulate a download
@@ -471,17 +303,18 @@ class _DemoScreenState extends State<DemoScreen> {
                       if (progressNotifier.value >= 1.0) {
                         return false;
                       }
-                      await Future.delayed(const Duration(milliseconds: 100));
+                      await Future.delayed(const Duration(milliseconds: 50));
                       if (progressNotifier.value < 1.0) {
-                          progressNotifier.value += 0.05;
+                        progressNotifier.value += 0.01;
                       }
                       if (progressNotifier.value >= 1.0) {
-                        ToastService.instance.success('Downloaded', 'Your download is complete.');
+                        ToastService.instance.success(
+                            'Downloaded', 'Your download is complete.');
                         action?.call();
                         progressNotifier.dispose();
                         return false;
                       }
-                        return true;
+                      return true;
                     });
                   },
                   icon: const Icon(Icons.download),

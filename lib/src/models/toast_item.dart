@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 ///
 /// It provides the [BuildContext] and an optional [ValueNotifier<double>]
 /// that can be used to listen to the progress of the toast's duration.
-typedef ToastContentBuilder = Widget Function(
-    BuildContext context, ValueNotifier<double>? progress, VoidCallback? dismissToast);
+typedef ToastContentBuilder = Widget Function(BuildContext context,
+    ValueNotifier<double>? progress, VoidCallback? dismissToast);
 
 /// Types of default toast messages
 enum ToastType { success, error, warning, info, none }

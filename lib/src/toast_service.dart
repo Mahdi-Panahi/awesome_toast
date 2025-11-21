@@ -120,6 +120,10 @@ class ToastService extends ChangeNotifier {
     double? progressStrokeWidth,
     List<ToastAction>? actions,
     ValueNotifier<double>? progressNotifier,
+    BorderRadiusGeometry? borderRadius,
+    EdgeInsetsGeometry? padding,
+    Color? backgroundColor,
+    IconData? icon,
   }) {
     final allActions = <ToastAction>[];
     if (actions != null) {
@@ -149,6 +153,15 @@ class ToastService extends ChangeNotifier {
             type: type,
             onDismiss: dismissToast,
             actions: allActions.isNotEmpty ? allActions : null,
+            progress: progress,
+            showProgress: showProgress,
+            progressColor: progressColor,
+            progressBackgroundColor: progressBackgroundColor,
+            progressStrokeWidth: progressStrokeWidth,
+            borderRadius: borderRadius,
+            padding: padding,
+            backgroundColor: backgroundColor,
+            icon: icon,
           );
         }
       },
@@ -303,7 +316,6 @@ class ToastService extends ChangeNotifier {
     );
   }
 
-
   void _removeToast(String key) {
     _items.removeWhere((item) => item.key == key);
     notifyListeners();
@@ -324,5 +336,3 @@ class ToastService extends ChangeNotifier {
     super.dispose();
   }
 }
-
-

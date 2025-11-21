@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 
 import '../models/toast_config.dart';
@@ -397,7 +395,8 @@ class _ToastItemWidgetState extends State<_ToastItemWidget>
       CurvedAnimation(parent: _controller, curve: const Interval(0, 0.5)),
     );
 
-    _progressNotifier = widget.item.progressNotifier ?? ValueNotifier<double>(0);
+    _progressNotifier =
+        widget.item.progressNotifier ?? ValueNotifier<double>(0);
 
     if (widget.item.progressNotifier == null) {
       _progressController = AnimationController(
