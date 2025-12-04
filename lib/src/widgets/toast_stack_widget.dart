@@ -578,23 +578,13 @@ class _ToastItemWidgetState extends State<_ToastItemWidget>
     Widget content = Container(
       margin: const EdgeInsets.only(bottom: 8),
       child: Stack(
-        alignment: Alignment.topLeft,
+        alignment: Alignment.topCenter,
         clipBehavior: Clip.none,
         children: [
           widget.item.contentBuilder(context, _progressNotifier, _dismiss, widget.item.actions),
         ],
       ),
     );
-
-    // if (widget.showBlur) {
-    //   content = ClipRRect(
-    //     borderRadius: BorderRadius.circular(8),
-    //     child: BackdropFilter(
-    //       filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
-    //       child: content,
-    //     ),
-    //   );
-    // }
 
     return content;
   }
