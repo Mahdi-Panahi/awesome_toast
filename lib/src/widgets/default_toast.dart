@@ -148,177 +148,184 @@ class DefaultToast extends StatelessWidget {
     final effectiveExpandProgress =
         expandProgress ?? config?.expandProgress ?? true;
 
+    final effectiveBlur = blur ?? config?.blur ?? 3;
+
+    Widget content = Stack(
+      children: [
+        if (effectiveShowProgress == true &&
+            progress != null &&
+            effectiveExpandProgress)
+          Positioned(
+            left: 0,
+            top: 0,
+            bottom: 0,
+            right: 0,
+            child: ValueListenableBuilder<double>(
+              valueListenable: progress!,
+              builder: (context, value, child) {
+                return LinearProgressIndicator(
+                  value: value,
+                  color: progressColor ?? config?.progressColor,
+                  backgroundColor: progressBackgroundColor ??
+                      config?.progressBackgroundColor,
+                  minHeight:
+                      progressStrokeWidth ?? config?.progressStrokeWidth,
+                );
+              },
+            ),
+          ),
+        Positioned(
+          right: -40,
+          bottom: -25,
+          child: Icon(
+            toastIcon,
+            color: iconColor ?? config?.iconColor ?? Colors.grey,
+            size: 130,
+          ),
+        ),
+        Container(
+          padding: padding ??
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          decoration: BoxDecoration(
+            borderRadius: br,
+            color: bgColor,
+            boxShadow: [
+              BoxShadow(
+                color: bgColor,
+                blurRadius: 0,
+                offset: const Offset(0, 0),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Icon(toastIcon,
+                  color: iconColor ?? config?.iconColor ?? Colors.white,
+                  size: 28),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      style: titleTextStyle ??
+                          config?.titleTextStyle ??
+                          const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      message,
+                      style: messageTextStyle ??
+                          config?.messageStyle ??
+                          TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                    ),
+                    if (actions?.isNotEmpty ?? false)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: Wrap(
+                          runAlignment: WrapAlignment.end,
+                          alignment: WrapAlignment.end,
+                          crossAxisAlignment: WrapCrossAlignment.end,
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: actions!
+                              .map(
+                                (action) => Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: TextButton(
+                                    onPressed: () {
+                                      action.onPressed();
+                                      onDismiss?.call();
+                                    },
+                                    child: Text(
+                                      action.label,
+                                      style: buttonsActionStyle ??
+                                          config?.buttonsActionStyle ??
+                                          const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
+                                          ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      )
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (effectiveShowProgress == true &&
+            progress != null &&
+            !effectiveExpandProgress)
+          Positioned(
+            bottom: 0,
+            right: 0,
+            left: 0,
+            child: ValueListenableBuilder<double>(
+              valueListenable: progress!,
+              builder: (context, value, child) {
+                return LinearProgressIndicator(
+                  value: value,
+                  color: progressColor ?? config?.progressColor,
+                  backgroundColor: progressBackgroundColor ??
+                      config?.progressBackgroundColor,
+                  minHeight:
+                      progressStrokeWidth ?? config?.progressStrokeWidth,
+                );
+              },
+            ),
+          ),
+        Positioned(
+          top: 4,
+          right: 4,
+          child: IconButton(
+            icon: const Icon(
+              Icons.close,
+              size: 18,
+              color: Colors.white,
+            ),
+            onPressed: onDismiss,
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(
+              minWidth: 24,
+              minHeight: 24,
+            ),
+          ),
+        ),
+      ],
+    );
+
+    if (effectiveBlur > 0) {
+      content = BackdropFilter(
+        filter: ImageFilter.blur(
+            sigmaX: effectiveBlur, sigmaY: effectiveBlur),
+        child: content,
+      );
+    }
+
     return ClipRRect(
       borderRadius: br,
-      child: BackdropFilter(
-        filter: ImageFilter.blur(
-            sigmaX: blur ?? config?.blur ?? 3,
-            sigmaY: blur ?? config?.blur ?? 3),
-        child: Stack(
-          children: [
-            if (effectiveShowProgress == true &&
-                progress != null &&
-                effectiveExpandProgress)
-              Positioned(
-                left: 0,
-                top: 0,
-                bottom: 0,
-                right: 0,
-                child: ValueListenableBuilder<double>(
-                  valueListenable: progress!,
-                  builder: (context, value, child) {
-                    return LinearProgressIndicator(
-                      value: value,
-                      color: progressColor ?? config?.progressColor,
-                      backgroundColor: progressBackgroundColor ??
-                          config?.progressBackgroundColor,
-                      minHeight:
-                          progressStrokeWidth ?? config?.progressStrokeWidth,
-                    );
-                  },
-                ),
-              ),
-            Positioned(
-              right: -40,
-              bottom: -25,
-              child: Icon(
-                toastIcon,
-                color: iconColor ?? config?.iconColor ?? Colors.grey,
-                size: 130,
-              ),
-            ),
-            Container(
-              padding: padding ??
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              decoration: BoxDecoration(
-                borderRadius: br,
-                color: bgColor,
-                boxShadow: [
-                  BoxShadow(
-                    color: bgColor,
-                    blurRadius: 0,
-                    offset: const Offset(0, 0),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Icon(toastIcon,
-                      color: iconColor ?? config?.iconColor ?? Colors.white,
-                      size: 28),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          title,
-                          style: titleTextStyle ??
-                              config?.titleTextStyle ??
-                              const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          message,
-                          style: messageTextStyle ??
-                              config?.messageStyle ??
-                              TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                              ),
-                        ),
-                        if (actions?.isNotEmpty ?? false)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 16.0),
-                            child: Wrap(
-                              runAlignment: WrapAlignment.end,
-                              alignment: WrapAlignment.end,
-                              crossAxisAlignment: WrapCrossAlignment.end,
-                              spacing: 8,
-                              runSpacing: 8,
-                              children: actions!
-                                  .map(
-                                    (action) => Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(20),
-                                        border: Border.all(
-                                          color: Colors.white,
-                                          width: 1,
-                                        ),
-                                      ),
-                                      child: TextButton(
-                                        onPressed: () {
-                                          action.onPressed();
-                                          onDismiss?.call();
-                                        },
-                                        child: Text(
-                                          action.label,
-                                          style: buttonsActionStyle ??
-                                              config?.buttonsActionStyle ??
-                                              const TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 14,
-                                              ),
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                  .toList(),
-                            ),
-                          )
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (effectiveShowProgress == true &&
-                progress != null &&
-                !effectiveExpandProgress)
-              Positioned(
-                bottom: 0,
-                right: 0,
-                left: 0,
-                child: ValueListenableBuilder<double>(
-                  valueListenable: progress!,
-                  builder: (context, value, child) {
-                    return LinearProgressIndicator(
-                      value: value,
-                      color: progressColor ?? config?.progressColor,
-                      backgroundColor: progressBackgroundColor ??
-                          config?.progressBackgroundColor,
-                      minHeight:
-                          progressStrokeWidth ?? config?.progressStrokeWidth,
-                    );
-                  },
-                ),
-              ),
-            Positioned(
-              top: 4,
-              right: 4,
-              child: IconButton(
-                icon: const Icon(
-                  Icons.close,
-                  size: 18,
-                  color: Colors.white,
-                ),
-                onPressed: onDismiss,
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(
-                  minWidth: 24,
-                  minHeight: 24,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+      child: content,
     );
   }
 }

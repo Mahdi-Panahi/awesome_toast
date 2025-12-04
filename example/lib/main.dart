@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.dark,
           useMaterial3: true,
         ),
-        home: DemoScreen(),
+        home: const DemoScreen(),
         debugShowCheckedModeBanner: false,
       ),
     );
@@ -211,7 +211,7 @@ class _DemoScreenState extends State<DemoScreen> {
                                             angle: value * 5,
                                             child: Transform.scale(
                                               scale: value * 5,
-                                              child: FlutterLogo(),
+                                              child: const FlutterLogo(),
                                             ),
                                           ),
                                         ],
@@ -268,14 +268,14 @@ class _DemoScreenState extends State<DemoScreen> {
                                                     .toList(),
                                               ),
                                             )
-                                          : SizedBox.shrink(),
+                                          : const SizedBox.shrink(),
                                     ),
                                     Positioned(
                                       top: 5,
                                       right: 5,
                                       child: IconButton(
                                         onPressed: dismissToast,
-                                        icon: Icon(
+                                        icon: const Icon(
                                           Icons.waving_hand,
                                           color: Colors.white,
                                         ),

@@ -213,12 +213,21 @@ class _ToastStackLayoutState extends State<_ToastStackLayout> {
         final isStacked = widget.items.length > widget.config.stackThreshold &&
             !widget.hoverNotifier.isHovered;
 
+        // Pre-calculate offsets
+        final offsets = <String, double>{};
+        double currentOffset = 0;
+        for (final item in widget.items) {
+          offsets[item.key] = currentOffset;
+          currentOffset += (_itemHeights[item.key] ?? 80.0) + 8;
+        }
+        final calculatedTotalHeight = currentOffset > 0 ? currentOffset : 100.0;
+
         return TweenAnimationBuilder<double>(
           tween: Tween(begin: 0, end: isStacked ? 1 : 0),
           duration: widget.config.stackDuration,
           curve: widget.config.curve,
           builder: (context, stackProgress, child) {
-            final totalHeight = isStacked ? 100.0 : _calculateTotalHeight();
+            final totalHeight = isStacked ? 100.0 : calculatedTotalHeight;
 
             return SizedBox(
               height: totalHeight,
@@ -233,6 +242,7 @@ class _ToastStackLayoutState extends State<_ToastStackLayout> {
                       i,
                       stackProgress,
                       isStacked,
+                      offsets[widget.items[i].key] ?? 0.0,
                     ),
                 ],
               ),
@@ -243,20 +253,13 @@ class _ToastStackLayoutState extends State<_ToastStackLayout> {
     );
   }
 
-  double _calculateTotalHeight() {
-    double total = 0;
-    for (var item in widget.items) {
-      total += (_itemHeights[item.key] ?? 80.0) + 8;
-    }
-    return total > 0 ? total : 100;
-  }
-
   Widget _buildItem(
     BuildContext context,
     ToastItem item,
     int index,
     double stackProgress,
     bool isStacked,
+    double expandedOffset,
   ) {
     final isDismissing = widget.dismissing[item.key] == true;
     final isVisible = !isStacked || index < 3;
@@ -289,7 +292,7 @@ class _ToastStackLayoutState extends State<_ToastStackLayout> {
       }
     } else {
       opacity = 1.0;
-      positionOffset = _calculateExpandedOffset(index);
+      positionOffset = expandedOffset;
     }
 
     return AnimatedPositioned(
@@ -332,18 +335,6 @@ class _ToastStackLayoutState extends State<_ToastStackLayout> {
         ),
       ),
     );
-  }
-
-  double _calculateExpandedOffset(int index) {
-    if (index == 0) return 0;
-
-    double totalOffset = 0;
-    for (int i = 0; i < index; i++) {
-      final itemKey = widget.items[i].key;
-      totalOffset += (_itemHeights[itemKey] ?? 80.0) + 8;
-    }
-
-    return totalOffset;
   }
 }
 
