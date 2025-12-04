@@ -541,7 +541,7 @@ class _ToastItemWidgetState extends State<_ToastItemWidget>
         alignment: Alignment.topLeft,
         clipBehavior: Clip.none,
         children: [
-          widget.item.contentBuilder(context, _progressNotifier, _dismiss),
+          widget.item.contentBuilder(context, _progressNotifier, _dismiss, widget.item.actions),
         ],
       ),
     );

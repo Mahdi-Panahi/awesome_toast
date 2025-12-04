@@ -74,6 +74,15 @@ class ToastStackConfig {
   /// Default progress indicator stroke width
   final double? progressStrokeWidth;
 
+  /// Default icon color
+  final Color? iconColor;
+
+  /// Whether the progress bar should expand to fill the background
+  final bool? expandProgress;
+
+  /// Blur intensity for the glass effect
+  final double? blur;
+
   const ToastStackConfig({
     this.position = ToastPosition.topRight,
     this.stackThreshold = 3,
@@ -95,6 +104,9 @@ class ToastStackConfig {
     this.progressColor,
     this.progressBackgroundColor,
     this.progressStrokeWidth,
+    this.iconColor,
+    this.expandProgress,
+    this.blur,
   })  : assert(stackThreshold > 0, 'stackThreshold must be greater than 0'),
         assert(stackOffset >= 0, 'stackOffset must be non-negative'),
         assert(
@@ -135,6 +147,9 @@ class ToastStackConfig {
     Color? progressColor,
     Color? progressBackgroundColor,
     double? progressStrokeWidth,
+    Color? iconColor,
+    bool? expandProgress,
+    double? blur,
   }) {
     return ToastStackConfig(
       position: position ?? this.position,
@@ -159,6 +174,9 @@ class ToastStackConfig {
       progressBackgroundColor:
           progressBackgroundColor ?? this.progressBackgroundColor,
       progressStrokeWidth: progressStrokeWidth ?? this.progressStrokeWidth,
+      iconColor: iconColor ?? this.iconColor,
+      expandProgress: expandProgress ?? this.expandProgress,
+      blur: blur ?? this.blur,
     );
   }
 }

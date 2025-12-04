@@ -28,8 +28,8 @@ class MyApp extends StatelessWidget {
         messageStyle: const TextStyle(fontSize: 14, color: Colors.white),
         buttonsActionStyle: const TextStyle(
             fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
-        progressColor: Colors.blue,
-        progressBackgroundColor: Colors.grey,
+        progressColor: Colors.black26.withValues(alpha: 0.3),
+        progressBackgroundColor: Colors.white10,
         progressStrokeWidth: 3,
       ),
       child: MaterialApp(
@@ -182,28 +182,120 @@ class _DemoScreenState extends State<DemoScreen> {
                 OutlinedButton.icon(
                   onPressed: () {
                     ToastService.instance.show(
-                        contentBuilder: (context, progress, dismissToast) =>
-                            DefaultToast(
-                              title: 'Custom Toast',
-                              message: 'This toast uses DefaultToast widget',
-                              type: ToastType.info,
-                              backgroundColor: Colors.purple.shade100,
-                              icon: Icons.star,
-                              actions: [
-                                ToastAction(
-                                  label: 'Dismiss',
-                                  onPressed: () {
-                                    ToastService.instance.success(
-                                      'Dismissed',
-                                      'Toast has been dismissed.',
-                                    );
-                                  },
-                                ),
-                              ],
-                              onDismiss: dismissToast,
-                              showProgress: true,
-                              progress: progress,
-                            ),
+                        contentBuilder:
+                            (context, progress, dismissToast, actions) {
+                          return ValueListenableBuilder(
+                              valueListenable: progress ?? ValueNotifier(0.0),
+                              builder: (context, value, child) {
+                                return Stack(
+                                  children: [
+                                    Container(
+                                      height: 150,
+                                      width: 400 * value,
+                                      decoration: BoxDecoration(
+                                        color: Colors.blue,
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                    Container(
+                                      height: 150,
+                                      width: 400,
+                                      decoration: BoxDecoration(
+                                        color: Colors.blueAccent.withAlpha(200),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          SizedBox(width: 200 * value),
+                                          Transform.rotate(
+                                            angle: value * 5,
+                                            child: Transform.scale(
+                                              scale: value * 5,
+                                              child: FlutterLogo(),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Positioned(
+                                      right: 0,
+                                      bottom: 0,
+                                      child: (actions?.isNotEmpty ?? false)
+                                          ? Padding(
+                                              padding:
+                                                  const EdgeInsets.all(16.0),
+                                              child: Wrap(
+                                                runAlignment: WrapAlignment.end,
+                                                alignment: WrapAlignment.end,
+                                                crossAxisAlignment:
+                                                    WrapCrossAlignment.end,
+                                                spacing: 8,
+                                                runSpacing: 8,
+                                                children: actions!
+                                                    .map(
+                                                      (action) => Container(
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(20),
+                                                          border: Border.all(
+                                                            color: Colors.white,
+                                                            width: 1,
+                                                          ),
+                                                        ),
+                                                        child: TextButton(
+                                                          onPressed: () {
+                                                            action.onPressed();
+                                                            dismissToast
+                                                                ?.call();
+                                                          },
+                                                          child: Text(
+                                                            action.label,
+                                                            style:
+                                                                const TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 14,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    )
+                                                    .toList(),
+                                              ),
+                                            )
+                                          : SizedBox.shrink(),
+                                    ),
+                                    Positioned(
+                                      top: 5,
+                                      right: 5,
+                                      child: IconButton(
+                                        onPressed: dismissToast,
+                                        icon: Icon(
+                                          Icons.waving_hand,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                );
+                              });
+                        },
+                        actions: [
+                          ToastAction(
+                            label: 'load',
+                            onPressed: () {
+                              ToastService.instance.success(
+                                'Dismissed',
+                                'Toast has been dismissed.',
+                              );
+                            },
+                          ),
+                        ],
                         duration: const Duration(seconds: 5));
                   },
                   icon: const Icon(Icons.palette),
@@ -273,7 +365,7 @@ class _DemoScreenState extends State<DemoScreen> {
                     final progressNotifier = ValueNotifier<double>(0.0);
                     VoidCallback? action = () {};
                     ToastService.instance.show(
-                      contentBuilder: (context, progress, dismissToast) {
+                      contentBuilder: (context, progress, dismissToast, _) {
                         action = dismissToast;
                         return DefaultToast(
                           title: 'Progress Test',
@@ -282,6 +374,8 @@ class _DemoScreenState extends State<DemoScreen> {
                           showProgress: true,
                           progress: progressNotifier,
                           icon: Icons.download,
+                          progressBackgroundColor: Colors.white10,
+                          progressColor: Colors.green.withValues(alpha: 0.8),
                           actions: [
                             ToastAction(
                               label: 'Cancel',
@@ -349,8 +443,9 @@ class _DemoScreenState extends State<DemoScreen> {
                 OutlinedButton.icon(
                   onPressed: () {
                     ToastService.instance.show(
-                      contentBuilder: (context, progress, dismissToast) =>
-                          DefaultToast(
+                      contentBuilder:
+                          (context, progress, dismissToast, actions) =>
+                              DefaultToast(
                         title: 'Custom Style',
                         message: 'This toast has custom text styles.',
                         type: ToastType.info,
@@ -377,8 +472,9 @@ class _DemoScreenState extends State<DemoScreen> {
                 OutlinedButton.icon(
                   onPressed: () {
                     ToastService.instance.show(
-                      contentBuilder: (context, progress, dismissToast) =>
-                          DefaultToast(
+                      contentBuilder:
+                          (context, progress, dismissToast, actions) =>
+                              DefaultToast(
                         title: 'Custom Action',
                         message: 'This toast has a custom action button style.',
                         type: ToastType.info,
@@ -404,14 +500,16 @@ class _DemoScreenState extends State<DemoScreen> {
                 OutlinedButton.icon(
                   onPressed: () {
                     ToastService.instance.show(
-                      contentBuilder: (context, progress, dismissToast) =>
-                          DefaultToast(
+                      contentBuilder:
+                          (context, progress, dismissToast, actions) =>
+                              DefaultToast(
                         title: 'Custom Progress',
                         message: 'This toast has a custom progress indicator.',
                         type: ToastType.info,
                         onDismiss: dismissToast,
                         progressColor: Colors.green,
-                        progressBackgroundColor: Colors.grey.withAlpha((0.5 * 255).round()),
+                        progressBackgroundColor:
+                            Colors.grey.withAlpha((0.5 * 255).round()),
                         progressStrokeWidth: 10,
                         showProgress: true,
                         progress: progress,

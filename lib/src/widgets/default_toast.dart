@@ -26,6 +26,9 @@ class DefaultToast extends StatelessWidget {
   /// Icon to be displayed
   final IconData? icon;
 
+  /// Icon color
+  final Color? iconColor;
+
   /// Progress indicator value notifier
   final ValueNotifier<double>? progress;
 
@@ -41,8 +44,14 @@ class DefaultToast extends StatelessWidget {
   /// Progress indicator stroke width
   final double? progressStrokeWidth;
 
+  /// Progress expand type
+  final bool? expandProgress;
+
   /// Border radius of the toast
   final BorderRadiusGeometry? borderRadius;
+
+  /// Blur value
+  final double? blur;
 
   /// Padding of the toast
   final EdgeInsetsGeometry? padding;
@@ -65,12 +74,15 @@ class DefaultToast extends StatelessWidget {
     this.onDismiss,
     this.backgroundColor,
     this.icon,
+    this.iconColor,
     this.progress,
     this.showProgress,
     this.progressColor,
     this.progressBackgroundColor,
     this.progressStrokeWidth,
+    this.expandProgress,
     this.borderRadius,
+    this.blur,
     this.padding,
     this.buttonsActionStyle,
     this.titleTextStyle,
@@ -102,7 +114,7 @@ class DefaultToast extends StatelessWidget {
           bgColor = Colors.blue.shade700.withAlpha((opacity * 255).round());
           break;
         case ToastType.none:
-          bgColor = Colors.grey.withAlpha((opacity * 255).round());
+          bgColor = Colors.grey.withAlpha((opacity * 100).round());
           break;
       }
     }
@@ -130,21 +142,48 @@ class DefaultToast extends StatelessWidget {
     }
 
     final br = borderRadius ?? BorderRadius.circular(16);
-    final effectiveShowProgress =
-        showProgress ?? ToastService.instance.config?.showProgressByDefault ?? false;
+    final effectiveShowProgress = showProgress ??
+        ToastService.instance.config?.showProgressByDefault ??
+        false;
+    final effectiveExpandProgress =
+        expandProgress ?? config?.expandProgress ?? true;
 
     return ClipRRect(
       borderRadius: br,
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+        filter: ImageFilter.blur(
+            sigmaX: blur ?? config?.blur ?? 3,
+            sigmaY: blur ?? config?.blur ?? 3),
         child: Stack(
           children: [
+            if (effectiveShowProgress == true &&
+                progress != null &&
+                effectiveExpandProgress)
+              Positioned(
+                left: 0,
+                top: 0,
+                bottom: 0,
+                right: 0,
+                child: ValueListenableBuilder<double>(
+                  valueListenable: progress!,
+                  builder: (context, value, child) {
+                    return LinearProgressIndicator(
+                      value: value,
+                      color: progressColor ?? config?.progressColor,
+                      backgroundColor: progressBackgroundColor ??
+                          config?.progressBackgroundColor,
+                      minHeight:
+                          progressStrokeWidth ?? config?.progressStrokeWidth,
+                    );
+                  },
+                ),
+              ),
             Positioned(
               right: -40,
               bottom: -25,
               child: Icon(
                 toastIcon,
-                color: Colors.grey,
+                color: iconColor ?? config?.iconColor ?? Colors.grey,
                 size: 130,
               ),
             ),
@@ -164,7 +203,9 @@ class DefaultToast extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(toastIcon, color: Colors.white, size: 28),
+                  Icon(toastIcon,
+                      color: iconColor ?? config?.iconColor ?? Colors.white,
+                      size: 28),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Column(
@@ -237,7 +278,9 @@ class DefaultToast extends StatelessWidget {
                 ],
               ),
             ),
-            if (effectiveShowProgress == true && progress != null)
+            if (effectiveShowProgress == true &&
+                progress != null &&
+                !effectiveExpandProgress)
               Positioned(
                 bottom: 0,
                 right: 0,
@@ -249,8 +292,7 @@ class DefaultToast extends StatelessWidget {
                       value: value,
                       color: progressColor ?? config?.progressColor,
                       backgroundColor: progressBackgroundColor ??
-                          config?.progressBackgroundColor
-                              ?.withAlpha((0.5 * 255).round()),
+                          config?.progressBackgroundColor,
                       minHeight:
                           progressStrokeWidth ?? config?.progressStrokeWidth,
                     );

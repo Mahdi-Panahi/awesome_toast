@@ -101,9 +101,12 @@ class ToastService extends ChangeNotifier {
     IconData? icon,
     TextStyle? titleTextStyle,
     TextStyle? messageTextStyle,
+    Color? iconColor,
+    bool? expandProgress,
+    double? blur,
   }) {
     show(
-      contentBuilder: (context, progress, dismissToast) {
+      contentBuilder: (context, progress, dismissToast, _) {
         if (_config?.toastBuilder != null) {
           return _config!.toastBuilder!(
             context,
@@ -132,6 +135,9 @@ class ToastService extends ChangeNotifier {
             icon: icon,
             titleTextStyle: titleTextStyle,
             messageTextStyle: messageTextStyle,
+            iconColor: iconColor,
+            expandProgress: expandProgress,
+            blur: blur,
           );
         }
       },
@@ -164,6 +170,9 @@ class ToastService extends ChangeNotifier {
     IconData? icon,
     TextStyle? titleTextStyle,
     TextStyle? messageTextStyle,
+    Color? iconColor,
+    bool? expandProgress,
+    double? blur,
   }) {
     showDefault(
       title: title,
@@ -184,6 +193,9 @@ class ToastService extends ChangeNotifier {
       icon: icon,
       titleTextStyle: titleTextStyle,
       messageTextStyle: messageTextStyle,
+      iconColor: iconColor,
+      expandProgress: expandProgress,
+      blur: blur,
     );
   }
 
@@ -209,6 +221,9 @@ class ToastService extends ChangeNotifier {
     IconData? icon,
     TextStyle? titleTextStyle,
     TextStyle? messageTextStyle,
+    Color? iconColor,
+    bool? expandProgress,
+    double? blur,
   }) {
     showDefault(
       title: title,
@@ -229,6 +244,9 @@ class ToastService extends ChangeNotifier {
       icon: icon,
       titleTextStyle: titleTextStyle,
       messageTextStyle: messageTextStyle,
+      iconColor: iconColor,
+      expandProgress: expandProgress,
+      blur: blur,
     );
   }
 
@@ -254,6 +272,9 @@ class ToastService extends ChangeNotifier {
     IconData? icon,
     TextStyle? titleTextStyle,
     TextStyle? messageTextStyle,
+    Color? iconColor,
+    bool? expandProgress,
+    double? blur,
   }) {
     showDefault(
       title: title,
@@ -274,6 +295,9 @@ class ToastService extends ChangeNotifier {
       icon: icon,
       titleTextStyle: titleTextStyle,
       messageTextStyle: messageTextStyle,
+      iconColor: iconColor,
+      expandProgress: expandProgress,
+      blur: blur,
     );
   }
 
@@ -299,6 +323,9 @@ class ToastService extends ChangeNotifier {
     IconData? icon,
     TextStyle? titleTextStyle,
     TextStyle? messageTextStyle,
+    Color? iconColor,
+    bool? expandProgress,
+    double? blur,
   }) {
     showDefault(
       title: title,
@@ -319,6 +346,9 @@ class ToastService extends ChangeNotifier {
       icon: icon,
       titleTextStyle: titleTextStyle,
       messageTextStyle: messageTextStyle,
+      iconColor: iconColor,
+      expandProgress: expandProgress,
+      blur: blur,
     );
   }
 
