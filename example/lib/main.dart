@@ -357,6 +357,30 @@ class _DemoScreenState extends State<DemoScreen> {
                   icon: const Icon(Icons.done_all),
                   label: const Text('Toast with Action & Progress'),
                 ),
+                const SizedBox(height: 8),
+                OutlinedButton.icon(
+                  onPressed: () {
+                    ToastService.instance.error(
+                      'Critical Alert',
+                      'This toast cannot be dismissed by swiping.',
+                      dismissable: false,
+                      duration: const Duration(seconds: 5),
+                      actions: [
+                        ToastAction(
+                          label: 'Do Something',
+                          onPressed: () {
+                            ToastService.instance.success(
+                              'Done!',
+                              'Action done.',
+                            );
+                          },
+                        ),
+                      ]
+                    );
+                  },
+                  icon: const Icon(Icons.lock),
+                  label: const Text('Non-Dismissable Toast'),
+                ),
               ]),
               const SizedBox(height: 24),
               _buildSection('Progress value changes Test', [

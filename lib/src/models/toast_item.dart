@@ -31,6 +31,9 @@ class ToastItem {
   /// Used to externally control the progress of the toast.
   final ValueNotifier<double>? progressNotifier;
 
+  /// Whether this specific toast is dismissable
+  final bool? dismissable;
+
   ToastItem({
     required this.key,
     required this.contentBuilder,
@@ -38,5 +41,6 @@ class ToastItem {
     this.onDismiss,
     this.actions,
     this.progressNotifier,
+    this.dismissable,
   });
 }

@@ -457,7 +457,29 @@ class _ToastItemWidgetState extends State<_ToastItemWidget>
   }
 
   void _onHorizontalDragUpdate(DragUpdateDetails details) {
-    _dragOffsetNotifier.value += details.delta.dx;
+    final dismissable = widget.item.dismissable ?? true;
+
+    if (!dismissable) {
+      // If not dismissable, apply resistance (dampening)
+      double newDragValue = _dragOffsetNotifier.value + details.delta.dx;
+      double resistance = 1.0;
+
+      if (newDragValue.abs() > 20) {
+        resistance = 0.2; // High resistance after 20px
+      } else if (newDragValue.abs() > 10) {
+        resistance = 0.5; // Medium resistance
+      }
+
+      _dragOffsetNotifier.value += details.delta.dx * resistance;
+      
+      // Cap the drag distance
+      if (_dragOffsetNotifier.value.abs() > 50) {
+        _dragOffsetNotifier.value = _dragOffsetNotifier.value.sign * 50;
+      }
+    } else {
+      _dragOffsetNotifier.value += details.delta.dx;
+    }
+
     if (!_isDragging) {
       _isDragging = true;
     }
@@ -465,11 +487,38 @@ class _ToastItemWidgetState extends State<_ToastItemWidget>
 
   void _onHorizontalDragEnd(DragEndDetails details) {
     final width = context.size?.width ?? 320;
-    if (_dragOffsetNotifier.value.abs() > width * 0.4) {
+    final dismissable = widget.item.dismissable ?? true;
+
+    if (dismissable && _dragOffsetNotifier.value.abs() > width * 0.4) {
       _dismiss();
     } else {
-      _dragOffsetNotifier.value = 0;
-      _isDragging = false;
+      // Snap back with animation
+      final remaining = 0 - _dragOffsetNotifier.value;
+      final duration = Duration(milliseconds: (remaining.abs() * 2).clamp(100, 300).toInt());
+      
+      final controller = AnimationController(
+        vsync: this,
+        duration: duration,
+      );
+      
+      final animation = Tween<double>(
+        begin: _dragOffsetNotifier.value,
+        end: 0,
+      ).animate(CurvedAnimation(parent: controller, curve: Curves.easeOut));
+
+      animation.addListener(() {
+        if (mounted) {
+          _dragOffsetNotifier.value = animation.value;
+        }
+      });
+
+      controller.forward().then((_) {
+        controller.dispose();
+        if (mounted) {
+          _dragOffsetNotifier.value = 0;
+          _isDragging = false;
+        }
+      });
     }
   }
 

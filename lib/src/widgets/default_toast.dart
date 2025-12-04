@@ -65,6 +65,9 @@ class DefaultToast extends StatelessWidget {
   /// Custom text style for the message
   final TextStyle? messageTextStyle;
 
+  /// Whether this specific toast is dismissable
+  final bool? dismissable;
+
   const DefaultToast({
     super.key,
     required this.title,
@@ -87,6 +90,7 @@ class DefaultToast extends StatelessWidget {
     this.buttonsActionStyle,
     this.titleTextStyle,
     this.messageTextStyle,
+    this.dismissable,
   });
 
   @override
@@ -149,6 +153,7 @@ class DefaultToast extends StatelessWidget {
         expandProgress ?? config?.expandProgress ?? true;
 
     final effectiveBlur = blur ?? config?.blur ?? 3;
+    final effectiveDismissable = dismissable ?? true;
 
     Widget content = Stack(
       children: [
@@ -295,23 +300,24 @@ class DefaultToast extends StatelessWidget {
               },
             ),
           ),
-        Positioned(
-          top: 4,
-          right: 4,
-          child: IconButton(
-            icon: const Icon(
-              Icons.close,
-              size: 18,
-              color: Colors.white,
-            ),
-            onPressed: onDismiss,
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(
-              minWidth: 24,
-              minHeight: 24,
+        if (effectiveDismissable)
+          Positioned(
+            top: 4,
+            right: 4,
+            child: IconButton(
+              icon: const Icon(
+                Icons.close,
+                size: 18,
+                color: Colors.white,
+              ),
+              onPressed: onDismiss,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(
+                minWidth: 24,
+                minHeight: 24,
+              ),
             ),
           ),
-        ),
       ],
     );
 

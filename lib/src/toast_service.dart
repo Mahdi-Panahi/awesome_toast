@@ -59,6 +59,7 @@ class ToastService extends ChangeNotifier {
     VoidCallback? onDismiss,
     List<ToastAction>? actions,
     ValueNotifier<double>? progressNotifier,
+    bool? dismissable,
   }) {
     final key = 'toast_${_counter++}_${DateTime.now().millisecondsSinceEpoch}';
 
@@ -72,6 +73,7 @@ class ToastService extends ChangeNotifier {
       },
       actions: actions,
       progressNotifier: progressNotifier,
+      dismissable: dismissable,
     );
 
     _items.insert(0, item);
@@ -81,7 +83,7 @@ class ToastService extends ChangeNotifier {
   /// Shows a toast using the default styling provided by [DefaultToast].
   ///
   /// This is a convenience method that simplifies showing standard toasts.
-  /// If a `toastBuilder` is provided in [ToastStackConfig], it will be used instead.
+  /// If a `toastBuilder` is provided in [ToastStackConfig], it will be used instead. Enough 
   void showDefault({
     required String title,
     required String message,
@@ -104,9 +106,10 @@ class ToastService extends ChangeNotifier {
     Color? iconColor,
     bool? expandProgress,
     double? blur,
+    bool? dismissable,
   }) {
     show(
-      contentBuilder: (context, progress, dismissToast, _) {
+      contentBuilder: (context, progress, dismissToast, actions) {
         if (_config?.toastBuilder != null) {
           return _config!.toastBuilder!(
             context,
@@ -138,6 +141,7 @@ class ToastService extends ChangeNotifier {
             iconColor: iconColor,
             expandProgress: expandProgress,
             blur: blur,
+            dismissable: dismissable,
           );
         }
       },
@@ -145,6 +149,7 @@ class ToastService extends ChangeNotifier {
       onDismiss: onDismiss,
       progressNotifier: progressNotifier,
       actions: actions,
+      dismissable: dismissable,
     );
   }
 
@@ -173,12 +178,14 @@ class ToastService extends ChangeNotifier {
     Color? iconColor,
     bool? expandProgress,
     double? blur,
+    bool? dismissable,
   }) {
+    final effectiveAutoDismiss = dismissable == false ? false : autoDismiss;
     showDefault(
       title: title,
       message: message,
       type: ToastType.success,
-      duration: autoDismiss ? (duration ?? _config?.defaultDuration) : null,
+      duration: effectiveAutoDismiss ? (duration ?? _config?.defaultDuration) : null,
       showProgress: showProgress,
       onDismiss: onDismiss,
       actions: actions,
@@ -196,6 +203,7 @@ class ToastService extends ChangeNotifier {
       iconColor: iconColor,
       expandProgress: expandProgress,
       blur: blur,
+      dismissable: dismissable,
     );
   }
 
@@ -224,12 +232,14 @@ class ToastService extends ChangeNotifier {
     Color? iconColor,
     bool? expandProgress,
     double? blur,
+    bool? dismissable,
   }) {
+    final effectiveAutoDismiss = dismissable == false ? false : autoDismiss;
     showDefault(
       title: title,
       message: message,
       type: ToastType.error,
-      duration: autoDismiss ? (duration ?? _config?.defaultDuration) : null,
+      duration: effectiveAutoDismiss ? (duration ?? _config?.defaultDuration) : null,
       showProgress: showProgress,
       onDismiss: onDismiss,
       actions: actions,
@@ -247,6 +257,7 @@ class ToastService extends ChangeNotifier {
       iconColor: iconColor,
       expandProgress: expandProgress,
       blur: blur,
+      dismissable: dismissable,
     );
   }
 
@@ -275,12 +286,14 @@ class ToastService extends ChangeNotifier {
     Color? iconColor,
     bool? expandProgress,
     double? blur,
+    bool? dismissable,
   }) {
+    final effectiveAutoDismiss = dismissable == false ? false : autoDismiss;
     showDefault(
       title: title,
       message: message,
       type: ToastType.warning,
-      duration: autoDismiss ? (duration ?? _config?.defaultDuration) : null,
+      duration: effectiveAutoDismiss ? (duration ?? _config?.defaultDuration) : null,
       showProgress: showProgress,
       onDismiss: onDismiss,
       actions: actions,
@@ -298,6 +311,7 @@ class ToastService extends ChangeNotifier {
       iconColor: iconColor,
       expandProgress: expandProgress,
       blur: blur,
+      dismissable: dismissable,
     );
   }
 
@@ -326,12 +340,14 @@ class ToastService extends ChangeNotifier {
     Color? iconColor,
     bool? expandProgress,
     double? blur,
+    bool? dismissable,
   }) {
+    final effectiveAutoDismiss = dismissable == false ? false : autoDismiss;
     showDefault(
       title: title,
       message: message,
       type: ToastType.info,
-      duration: autoDismiss ? (duration ?? _config?.defaultDuration) : null,
+      duration: effectiveAutoDismiss ? (duration ?? _config?.defaultDuration) : null,
       showProgress: showProgress,
       onDismiss: onDismiss,
       actions: actions,
@@ -349,6 +365,7 @@ class ToastService extends ChangeNotifier {
       iconColor: iconColor,
       expandProgress: expandProgress,
       blur: blur,
+      dismissable: dismissable,
     );
   }
 
