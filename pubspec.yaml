@@ -1,6 +1,6 @@
 name: awesome_toast
 description: "A beautiful, customizable toast notification system for Flutter with automatic stacking, smooth animations, and full navigation persistence."
-version: 1.0.0
+version: 2.0.0
 homepage: https://github.com/Mahdi-Panahi/awesome_toast
 repository: https://github.com/Mahdi-Panahi/awesome_toast
 

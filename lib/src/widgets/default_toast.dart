@@ -173,8 +173,7 @@ class DefaultToast extends StatelessWidget {
                   color: progressColor ?? config?.progressColor,
                   backgroundColor: progressBackgroundColor ??
                       config?.progressBackgroundColor,
-                  minHeight:
-                      progressStrokeWidth ?? config?.progressStrokeWidth,
+                  minHeight: progressStrokeWidth ?? config?.progressStrokeWidth,
                 );
               },
             ),
@@ -184,7 +183,7 @@ class DefaultToast extends StatelessWidget {
           bottom: -25,
           child: Icon(
             toastIcon,
-            color: iconColor ?? config?.iconColor ?? Colors.grey,
+            color: Colors.grey.withValues(alpha: 0.5),
             size: 130,
           ),
         ),
@@ -294,8 +293,7 @@ class DefaultToast extends StatelessWidget {
                   color: progressColor ?? config?.progressColor,
                   backgroundColor: progressBackgroundColor ??
                       config?.progressBackgroundColor,
-                  minHeight:
-                      progressStrokeWidth ?? config?.progressStrokeWidth,
+                  minHeight: progressStrokeWidth ?? config?.progressStrokeWidth,
                 );
               },
             ),
@@ -323,8 +321,7 @@ class DefaultToast extends StatelessWidget {
 
     if (effectiveBlur > 0) {
       content = BackdropFilter(
-        filter: ImageFilter.blur(
-            sigmaX: effectiveBlur, sigmaY: effectiveBlur),
+        filter: ImageFilter.blur(sigmaX: effectiveBlur, sigmaY: effectiveBlur),
         child: content,
       );
     }

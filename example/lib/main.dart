@@ -15,23 +15,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ToastProvider(
-      config: ToastStackConfig(
-        position: ToastPosition.topCenter,
-        stackThreshold: 3,
-        width: null,
-        defaultDuration: const Duration(seconds: 5),
-        showProgressByDefault: false,
-        curve: Curves.easeInOutQuart,
-        maxWidth: 340,
-        titleTextStyle: const TextStyle(
-            fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-        messageStyle: const TextStyle(fontSize: 14, color: Colors.white),
-        buttonsActionStyle: const TextStyle(
-            fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
-        progressColor: Colors.black26.withValues(alpha: 0.3),
-        progressBackgroundColor: Colors.white10,
-        progressStrokeWidth: 3,
-      ),
       child: MaterialApp(
         title: 'Awesome Toast Demo',
         theme: ThemeData(
@@ -191,19 +174,15 @@ class _DemoScreenState extends State<DemoScreen> {
                                   children: [
                                     Container(
                                       height: 150,
-                                      width: 400 * value,
-                                      decoration: BoxDecoration(
-                                        color: Colors.blue,
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                    ),
-                                    Container(
-                                      height: 150,
                                       width: 400,
                                       decoration: BoxDecoration(
-                                        color: Colors.blueAccent.withAlpha(200),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
+                                          color:
+                                              Colors.blueAccent.withAlpha(200),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                              width: 10 - 10 * value,
+                                              color: Colors.lightBlueAccent)),
                                       child: Row(
                                         children: [
                                           SizedBox(width: 200 * value),
@@ -211,14 +190,20 @@ class _DemoScreenState extends State<DemoScreen> {
                                             angle: value * 5,
                                             child: Transform.scale(
                                               scale: value * 5,
-                                              child: const FlutterLogo(),
+                                              child: Text(
+                                                '${(5 - value * 5).round()}',
+                                                style: TextStyle(
+                                                    fontSize: 40,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.white),
+                                              ),
                                             ),
                                           ),
                                         ],
                                       ),
                                     ),
                                     Positioned(
-                                      right: 0,
+                                      right: -100 + 100 * value,
                                       bottom: 0,
                                       child: (actions?.isNotEmpty ?? false)
                                           ? Padding(
@@ -271,7 +256,7 @@ class _DemoScreenState extends State<DemoScreen> {
                                           : const SizedBox.shrink(),
                                     ),
                                     Positioned(
-                                      top: 5,
+                                      top: (-20 + 100 * value).clamp(-20, 10),
                                       right: 5,
                                       child: IconButton(
                                         onPressed: dismissToast,
@@ -287,11 +272,11 @@ class _DemoScreenState extends State<DemoScreen> {
                         },
                         actions: [
                           ToastAction(
-                            label: 'load',
+                            label: 'Isn\'t it Beautiful?',
                             onPressed: () {
                               ToastService.instance.success(
-                                'Dismissed',
-                                'Toast has been dismissed.',
+                                'Absolutely!',
+                                'Toast has been dismissed!!!',
                               );
                             },
                           ),
@@ -360,23 +345,21 @@ class _DemoScreenState extends State<DemoScreen> {
                 const SizedBox(height: 8),
                 OutlinedButton.icon(
                   onPressed: () {
-                    ToastService.instance.error(
-                      'Critical Alert',
-                      'This toast cannot be dismissed by swiping.',
-                      dismissable: false,
-                      duration: const Duration(seconds: 5),
-                      actions: [
-                        ToastAction(
-                          label: 'Do Something',
-                          onPressed: () {
-                            ToastService.instance.success(
-                              'Done!',
-                              'Action done.',
-                            );
-                          },
-                        ),
-                      ]
-                    );
+                    ToastService.instance.error('Critical Alert',
+                        'This toast cannot be dismissed by swiping.',
+                        dismissable: false,
+                        duration: const Duration(seconds: 5),
+                        actions: [
+                          ToastAction(
+                            label: 'Do Something',
+                            onPressed: () {
+                              ToastService.instance.success(
+                                'Done!',
+                                'Action done.',
+                              );
+                            },
+                          ),
+                        ]);
                   },
                   icon: const Icon(Icons.lock),
                   label: const Text('Non-Dismissable Toast'),
@@ -389,13 +372,16 @@ class _DemoScreenState extends State<DemoScreen> {
                     final progressNotifier = ValueNotifier<double>(0.0);
                     VoidCallback? action = () {};
                     ToastService.instance.show(
-                      contentBuilder: (context, progress, dismissToast, _) {
+                      dismissable: false,
+                      contentBuilder:
+                          (context, progress, dismissToast, actions) {
                         action = dismissToast;
                         return DefaultToast(
                           title: 'Progress Test',
                           message: 'This toast has a progress indicator.',
                           type: ToastType.none,
                           showProgress: true,
+                          dismissable: false,
                           progress: progressNotifier,
                           icon: Icons.download,
                           progressBackgroundColor: Colors.white10,

@@ -83,7 +83,7 @@ class ToastService extends ChangeNotifier {
   /// Shows a toast using the default styling provided by [DefaultToast].
   ///
   /// This is a convenience method that simplifies showing standard toasts.
-  /// If a `toastBuilder` is provided in [ToastStackConfig], it will be used instead. Enough 
+  /// If a `toastBuilder` is provided in [ToastStackConfig], it will be used instead. Enough
   void showDefault({
     required String title,
     required String message,
@@ -156,6 +156,9 @@ class ToastService extends ChangeNotifier {
   /// Shows a success-themed toast.
   ///
   /// A shortcut for `showDefault` with `type = ToastType.success`.
+  ///
+  /// - [dismissable]: If false, the toast cannot be dismissed by swiping and
+  ///   will not automatically dismiss (ignores [autoDismiss] and [duration]).
   void success(
     String title,
     String message, {
@@ -185,7 +188,8 @@ class ToastService extends ChangeNotifier {
       title: title,
       message: message,
       type: ToastType.success,
-      duration: effectiveAutoDismiss ? (duration ?? _config?.defaultDuration) : null,
+      duration:
+          effectiveAutoDismiss ? (duration ?? _config?.defaultDuration) : null,
       showProgress: showProgress,
       onDismiss: onDismiss,
       actions: actions,
@@ -210,6 +214,9 @@ class ToastService extends ChangeNotifier {
   /// Shows an error-themed toast.
   ///
   /// A shortcut for `showDefault` with `type = ToastType.error`.
+  ///
+  /// - [dismissable]: If false, the toast cannot be dismissed by swiping and
+  ///   will not automatically dismiss (ignores [autoDismiss] and [duration]).
   void error(
     String title,
     String message, {
@@ -239,7 +246,8 @@ class ToastService extends ChangeNotifier {
       title: title,
       message: message,
       type: ToastType.error,
-      duration: effectiveAutoDismiss ? (duration ?? _config?.defaultDuration) : null,
+      duration:
+          effectiveAutoDismiss ? (duration ?? _config?.defaultDuration) : null,
       showProgress: showProgress,
       onDismiss: onDismiss,
       actions: actions,
@@ -264,6 +272,9 @@ class ToastService extends ChangeNotifier {
   /// Shows a warning-themed toast.
   ///
   /// A shortcut for `showDefault` with `type = ToastType.warning`.
+  ///
+  /// - [dismissable]: If false, the toast cannot be dismissed by swiping and
+  ///   will not automatically dismiss (ignores [autoDismiss] and [duration]).
   void warning(
     String title,
     String message, {
@@ -293,7 +304,8 @@ class ToastService extends ChangeNotifier {
       title: title,
       message: message,
       type: ToastType.warning,
-      duration: effectiveAutoDismiss ? (duration ?? _config?.defaultDuration) : null,
+      duration:
+          effectiveAutoDismiss ? (duration ?? _config?.defaultDuration) : null,
       showProgress: showProgress,
       onDismiss: onDismiss,
       actions: actions,
@@ -318,6 +330,9 @@ class ToastService extends ChangeNotifier {
   /// Shows an info-themed toast.
   ///
   /// A shortcut for `showDefault` with `type = ToastType.info`.
+  ///
+  /// - [dismissable]: If false, the toast cannot be dismissed by swiping and
+  ///   will not automatically dismiss (ignores [autoDismiss] and [duration]).
   void info(
     String title,
     String message, {
@@ -347,7 +362,8 @@ class ToastService extends ChangeNotifier {
       title: title,
       message: message,
       type: ToastType.info,
-      duration: effectiveAutoDismiss ? (duration ?? _config?.defaultDuration) : null,
+      duration:
+          effectiveAutoDismiss ? (duration ?? _config?.defaultDuration) : null,
       showProgress: showProgress,
       onDismiss: onDismiss,
       actions: actions,

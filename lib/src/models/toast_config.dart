@@ -84,11 +84,11 @@ class ToastStackConfig {
   final double? blur;
 
   const ToastStackConfig({
-    this.position = ToastPosition.topRight,
+    this.position = ToastPosition.topCenter,
     this.stackThreshold = 3,
     this.stackDuration = const Duration(milliseconds: 300),
     this.expandDuration = const Duration(milliseconds: 200),
-    this.defaultDuration = const Duration(seconds: 3),
+    this.defaultDuration = const Duration(seconds: 5),
     this.curve = Curves.easeInOutQuart,
     this.stackOffset = 8.0,
     this.stackScale = 0.95,
@@ -102,11 +102,11 @@ class ToastStackConfig {
     this.messageStyle,
     this.buttonsActionStyle,
     this.progressColor,
-    this.progressBackgroundColor,
-    this.progressStrokeWidth,
-    this.iconColor,
-    this.expandProgress,
-    this.blur,
+    this.progressBackgroundColor = Colors.white10,
+    this.progressStrokeWidth = 4,
+    this.iconColor = Colors.white,
+    this.expandProgress = true,
+    this.blur = 3,
   })  : assert(stackThreshold > 0, 'stackThreshold must be greater than 0'),
         assert(stackOffset >= 0, 'stackOffset must be non-negative'),
         assert(
