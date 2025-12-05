@@ -1,151 +1,334 @@
+import 'dart:ui';
+
+import 'package:awesome_toast/awesome_toast.dart';
 import 'package:flutter/material.dart';
 
-import '../models/toast_item.dart';
-import '../toast_service.dart';
-
-/// A default toast widget that provides a standard layout with an icon, title, and message.
-///
-/// This widget is used by [ToastService.showDefault] and can also be used directly
-/// with [ToastService.show] for custom toast content. It offers extensive
-
-/// customization options for colors, styles, and layout.
-///
-/// When used, it automatically adapts its colors to the current theme (light/dark)
-/// based on the [type], but all properties can be overridden.
+/// Default toast widget
 class DefaultToast extends StatelessWidget {
-  /// The main title of the toast.
+  /// Toast title
   final String title;
 
-  /// The detailed message of the toast.
+  /// Toast message
   final String message;
 
-  /// The type of toast, which determines the default icon and background color.
-  ///
-  /// Defaults to [ToastType.info].
+  /// Toast type
   final ToastType type;
 
-  /// Overrides the default background color.
+  /// Toast actions
+  final List<ToastAction>? actions;
+
+  /// Callback when toast is dismissed
+  final VoidCallback? onDismiss;
+
+  /// Background color of the toast
   final Color? backgroundColor;
 
-  /// Overrides the default icon.
+  /// Icon to be displayed
   final IconData? icon;
 
-  /// Custom text style for the title.
-  ///
-  /// If null, it falls back to [ToastStackConfig.titleTextStyle].
-  final TextStyle? titleStyle;
+  /// Icon color
+  final Color? iconColor;
 
-  /// Custom text style for the message.
-  ///
-  /// If null, it falls back to [ToastStackConfig.messageStyle].
-  final TextStyle? messageStyle;
+  /// Progress indicator value notifier
+  final ValueNotifier<double>? progress;
 
-  /// The padding around the toast content.
-  final EdgeInsets? padding;
+  /// Show progress indicator
+  final bool? showProgress;
 
-  /// The border radius of the toast container.
-  final BorderRadius? borderRadius;
+  /// Progress indicator color
+  final Color? progressColor;
 
-  /// A boolean to indicate if the toast has an action label.
-  final bool hasActionLabel;
+  /// Progress indicator background color
+  final Color? progressBackgroundColor;
 
-  /// Creates a default toast widget.
-  ///
-  /// The [title] and [message] are required. Other parameters are optional
-  /// and allow for detailed customization.
+  /// Progress indicator stroke width
+  final double? progressStrokeWidth;
+
+  /// Progress expand type
+  final bool? expandProgress;
+
+  /// Border radius of the toast
+  final BorderRadiusGeometry? borderRadius;
+
+  /// Blur value
+  final double? blur;
+
+  /// Padding of the toast
+  final EdgeInsetsGeometry? padding;
+
+  /// Custom text style for the action buttons
+  final TextStyle? buttonsActionStyle;
+
+  /// Custom text style for the title
+  final TextStyle? titleTextStyle;
+
+  /// Custom text style for the message
+  final TextStyle? messageTextStyle;
+
+  /// Whether this specific toast is dismissable
+  final bool? dismissable;
+
   const DefaultToast({
     super.key,
     required this.title,
     required this.message,
-    this.type = ToastType.info,
+    required this.type,
+    this.actions,
+    this.onDismiss,
     this.backgroundColor,
     this.icon,
-    this.titleStyle,
-    this.messageStyle,
-    this.padding,
+    this.iconColor,
+    this.progress,
+    this.showProgress,
+    this.progressColor,
+    this.progressBackgroundColor,
+    this.progressStrokeWidth,
+    this.expandProgress,
     this.borderRadius,
-    this.hasActionLabel = false,
+    this.blur,
+    this.padding,
+    this.buttonsActionStyle,
+    this.titleTextStyle,
+    this.messageTextStyle,
+    this.dismissable,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final config = ToastService.instance.config;
+    final double opacity = 0.5;
 
-    Color effectiveBackgroundColor;
-    IconData effectiveIcon;
+    Color bgColor;
+    IconData toastIcon;
 
-    if (backgroundColor != null && icon != null) {
-      effectiveBackgroundColor = backgroundColor!;
-      effectiveIcon = icon!;
+    if (backgroundColor != null) {
+      bgColor = backgroundColor!;
     } else {
       switch (type) {
         case ToastType.success:
-          effectiveBackgroundColor =
-              backgroundColor ??
-              (isDark ? Colors.green.shade900 : Colors.green.shade100);
-          effectiveIcon = icon ?? Icons.check_circle;
+          bgColor = Colors.green.shade700.withAlpha((opacity * 255).round());
           break;
         case ToastType.error:
-          effectiveBackgroundColor =
-              backgroundColor ??
-              (isDark ? Colors.red.shade900 : Colors.red.shade100);
-          effectiveIcon = icon ?? Icons.error;
+          bgColor = Colors.red.shade700.withAlpha((opacity * 255).round());
           break;
         case ToastType.warning:
-          effectiveBackgroundColor =
-              backgroundColor ??
-              (isDark ? Colors.orange.shade900 : Colors.orange.shade100);
-          effectiveIcon = icon ?? Icons.warning;
+          bgColor = Colors.orange.shade700.withAlpha((opacity * 255).round());
           break;
         case ToastType.info:
-          effectiveBackgroundColor =
-              backgroundColor ??
-              (isDark ? Colors.blue.shade900 : Colors.blue.shade100);
-          effectiveIcon = icon ?? Icons.info;
+          bgColor = Colors.blue.shade700.withAlpha((opacity * 255).round());
+          break;
+        case ToastType.none:
+          bgColor = Colors.grey.withAlpha((opacity * 100).round());
           break;
       }
     }
 
-    return Container(
-      padding: padding ?? const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: effectiveBackgroundColor,
-        borderRadius: borderRadius ?? BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          Icon(effectiveIcon, size: 24),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  title,
-                  style:
-                      titleStyle ??
-                      ToastService.instance.config?.titleTextStyle ??
-                      const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  message,
-                  style:
-                      messageStyle ??
-                      ToastService.instance.config?.messageStyle ??
-                      const TextStyle(fontSize: 14),
-                ),
-                if (hasActionLabel) SizedBox(height: 32),
-              ],
+    if (icon != null) {
+      toastIcon = icon!;
+    } else {
+      switch (type) {
+        case ToastType.success:
+          toastIcon = Icons.check_circle_outline_rounded;
+          break;
+        case ToastType.error:
+          toastIcon = Icons.error_outline_rounded;
+          break;
+        case ToastType.warning:
+          toastIcon = Icons.warning_amber_rounded;
+          break;
+        case ToastType.info:
+          toastIcon = Icons.info_outline_rounded;
+          break;
+        case ToastType.none:
+          toastIcon = Icons.sentiment_dissatisfied;
+          break;
+      }
+    }
+
+    final br = borderRadius ?? BorderRadius.circular(16);
+    final effectiveShowProgress = showProgress ??
+        ToastService.instance.config?.showProgressByDefault ??
+        false;
+    final effectiveExpandProgress =
+        expandProgress ?? config?.expandProgress ?? true;
+
+    final effectiveBlur = blur ?? config?.blur ?? 3;
+    final effectiveDismissable = dismissable ?? true;
+
+    Widget content = Stack(
+      children: [
+        if (effectiveShowProgress == true &&
+            progress != null &&
+            effectiveExpandProgress)
+          Positioned(
+            left: 0,
+            top: 0,
+            bottom: 0,
+            right: 0,
+            child: ValueListenableBuilder<double>(
+              valueListenable: progress!,
+              builder: (context, value, child) {
+                return LinearProgressIndicator(
+                  value: value,
+                  color: progressColor ?? config?.progressColor,
+                  backgroundColor: progressBackgroundColor ??
+                      config?.progressBackgroundColor,
+                  minHeight: progressStrokeWidth ?? config?.progressStrokeWidth,
+                );
+              },
             ),
           ),
-        ],
-      ),
+        Positioned(
+          right: -40,
+          bottom: -25,
+          child: Icon(
+            toastIcon,
+            color: Colors.grey.withValues(alpha: 0.5),
+            size: 130,
+          ),
+        ),
+        Container(
+          padding: padding ??
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          decoration: BoxDecoration(
+            borderRadius: br,
+            color: bgColor,
+            boxShadow: [
+              BoxShadow(
+                color: bgColor,
+                blurRadius: 0,
+                offset: const Offset(0, 0),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Icon(toastIcon,
+                  color: iconColor ?? config?.iconColor ?? Colors.white,
+                  size: 28),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      style: titleTextStyle ??
+                          config?.titleTextStyle ??
+                          const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      message,
+                      style: messageTextStyle ??
+                          config?.messageStyle ??
+                          TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                    ),
+                    if (actions?.isNotEmpty ?? false)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: Wrap(
+                          runAlignment: WrapAlignment.end,
+                          alignment: WrapAlignment.end,
+                          crossAxisAlignment: WrapCrossAlignment.end,
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: actions!
+                              .map(
+                                (action) => Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: TextButton(
+                                    onPressed: () {
+                                      action.onPressed();
+                                      onDismiss?.call();
+                                    },
+                                    child: Text(
+                                      action.label,
+                                      style: buttonsActionStyle ??
+                                          config?.buttonsActionStyle ??
+                                          const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
+                                          ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      )
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (effectiveShowProgress == true &&
+            progress != null &&
+            !effectiveExpandProgress)
+          Positioned(
+            bottom: 0,
+            right: 0,
+            left: 0,
+            child: ValueListenableBuilder<double>(
+              valueListenable: progress!,
+              builder: (context, value, child) {
+                return LinearProgressIndicator(
+                  value: value,
+                  color: progressColor ?? config?.progressColor,
+                  backgroundColor: progressBackgroundColor ??
+                      config?.progressBackgroundColor,
+                  minHeight: progressStrokeWidth ?? config?.progressStrokeWidth,
+                );
+              },
+            ),
+          ),
+        if (effectiveDismissable)
+          Positioned(
+            top: 4,
+            right: 4,
+            child: IconButton(
+              icon: const Icon(
+                Icons.close,
+                size: 18,
+                color: Colors.white,
+              ),
+              onPressed: onDismiss,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(
+                minWidth: 24,
+                minHeight: 24,
+              ),
+            ),
+          ),
+      ],
+    );
+
+    if (effectiveBlur > 0) {
+      content = BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: effectiveBlur, sigmaY: effectiveBlur),
+        child: content,
+      );
+    }
+
+    return ClipRRect(
+      borderRadius: br,
+      child: content,
     );
   }
 }

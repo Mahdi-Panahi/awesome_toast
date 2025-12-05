@@ -8,7 +8,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  awesome_toast: ^1.0.0
+  awesome_toast: ^2.0.0
 ```
 
 Run:
@@ -93,6 +93,7 @@ ToastService.instance.success(
   'Your file is being uploaded',
   showProgress: true,
   duration: Duration(seconds: 5),
+  expandProgress: true, // Progress bar fills the background
 );
 ```
 
@@ -103,32 +104,57 @@ ToastService.instance.info(
   'Item Deleted',
   'The item has been removed',
   duration: null, // Manual dismiss
-  actionLabel: 'Undo',
-  onAction: () {
-    print('Undo clicked!');
-  },
+  actions: [
+    ToastAction(
+      label: 'Undo',
+      onPressed: () {
+        print('Undo clicked!');
+      },
+    ),
+  ],
 );
 ```
 
-### Custom Toast
+### Custom Toast Content
+
+Use the `contentBuilder` to create a completely custom toast layout.
 
 ```dart
 ToastService.instance.show(
-  child: Container(
-    padding: EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: Colors.purple,
-      borderRadius: BorderRadius.circular(8),
-    ),
-    child: Row(
-      children: [
-        Icon(Icons.star, color: Colors.white),
-        SizedBox(width: 12),
-        Text('Custom toast!', style: TextStyle(color: Colors.white)),
-      ],
-    ),
-  ),
+  contentBuilder: (context, progress, dismiss, actions) {
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.purple,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.star, color: Colors.white),
+          SizedBox(width: 12),
+          Text('Custom toast!', style: TextStyle(color: Colors.white)),
+          Spacer(),
+          IconButton(
+            icon: Icon(Icons.close, color: Colors.white),
+            onPressed: dismiss,
+          )
+        ],
+      ),
+    );
+  },
   duration: Duration(seconds: 3),
+);
+```
+
+### Non-Dismissable Toast
+
+Prevent users from dismissing critical alerts.
+
+```dart
+ToastService.instance.error(
+  'Critical Error',
+  'This message cannot be dismissed.',
+  dismissable: false, // Disable drag-to-dismiss and auto-dismiss
 );
 ```
 
@@ -143,6 +169,8 @@ ToastStackConfig(
   defaultDuration: Duration(seconds: 4),    // How long to show
   width: 400,                               // Toast width
   showProgressByDefault: true,              // Always show progress
+  blur: 5.0,                                // Glassmorphism blur
+  iconColor: Colors.white,                  // Default icon color
 )
 ```
 
@@ -169,8 +197,12 @@ void deleteItem() {
     'Deleted',
     'Item removed',
     duration: Duration(seconds: 5),
-    actionLabel: 'Undo',
-    onAction: () => restoreItem(),
+    actions: [
+      ToastAction(
+        label: 'Undo',
+        onPressed: () => restoreItem(),
+      ),
+    ],
   );
 }
 ```
@@ -183,8 +215,7 @@ void uploadFile() {
     'Uploading',
     'Please wait...',
     showProgress: true,
-    duration: null, // Manual dismiss
-    autoDismiss: false, // Manual dismiss
+    dismissable: false, // Prevent dismissal during upload
   );
   
   // Later, after upload completes:
@@ -195,7 +226,7 @@ void uploadFile() {
 
 ## Interactive Features
 
-- **Swipe** left/right to dismiss
+- **Swipe** left/right to dismiss (if `dismissable` is true)
 - **Hover** over toasts to pause timers
 - **Click** close button to dismiss
 - **Tap** action button for actions
@@ -204,18 +235,10 @@ void uploadFile() {
 
 You're ready to use awesome_toast in your app!
 
-### Next Steps
-
-- Check out the [complete example](example/)
-- Read the [full documentation](README.md)
-- See the [API reference](API_REFERENCE.md)
-- Report issues on [GitHub](https://github.com/Mahdi-Panahi/awesome_toast/issues)
-
 ### Need Help?
 
 - 📖 [README](README.md) - Complete guide
 - 🔧 [API Reference](API_REFERENCE.md) - Detailed API docs
-- 💬 [Discussions](https://https://github.com/Mahdi-Panahi/awesome_toast/discussions) - Ask questions
 - 🐛 [Issues](https://github.com/Mahdi-Panahi/awesome_toast/issues) - Report bugs
 
 ---

@@ -1,3 +1,4 @@
+import 'package:awesome_toast/src/models/toast_action.dart';
 import 'package:flutter/material.dart';
 
 import '../models/toast_item.dart';
@@ -46,11 +47,14 @@ class ToastStackConfig {
 
   /// Custom toast builder (if null, uses DefaultToast)
   final Widget Function(
-      BuildContext context,
-      String title,
-      String message,
-      ToastType type,
-      )? toastBuilder;
+    BuildContext context,
+    String title,
+    String message,
+    ToastType type,
+    ValueNotifier<double>? progress,
+    VoidCallback? dismissToast,
+    List<ToastAction>? actions,
+  )? toastBuilder;
 
   /// Default title text style
   final TextStyle? titleTextStyle;
@@ -58,8 +62,8 @@ class ToastStackConfig {
   /// Default message text style
   final TextStyle? messageStyle;
 
-  /// Default action button text style
-  final TextStyle? actionLabelStyle;
+  /// Default action buttons text style
+  final TextStyle? buttonsActionStyle;
 
   /// Default progress indicator color
   final Color? progressColor;
@@ -70,12 +74,21 @@ class ToastStackConfig {
   /// Default progress indicator stroke width
   final double? progressStrokeWidth;
 
+  /// Default icon color
+  final Color? iconColor;
+
+  /// Whether the progress bar should expand to fill the background
+  final bool? expandProgress;
+
+  /// Blur intensity for the glass effect
+  final double? blur;
+
   const ToastStackConfig({
-    this.position = ToastPosition.topRight,
+    this.position = ToastPosition.topCenter,
     this.stackThreshold = 3,
     this.stackDuration = const Duration(milliseconds: 300),
     this.expandDuration = const Duration(milliseconds: 200),
-    this.defaultDuration = const Duration(seconds: 3),
+    this.defaultDuration = const Duration(seconds: 5),
     this.curve = Curves.easeInOutQuart,
     this.stackOffset = 8.0,
     this.stackScale = 0.95,
@@ -87,15 +100,18 @@ class ToastStackConfig {
     this.toastBuilder,
     this.titleTextStyle,
     this.messageStyle,
-    this.actionLabelStyle,
-    this.progressColor,
-    this.progressBackgroundColor,
-    this.progressStrokeWidth,
+    this.buttonsActionStyle,
+    this.progressColor = const Color(0x809E9E9E),
+    this.progressBackgroundColor = Colors.transparent,
+    this.progressStrokeWidth = 4,
+    this.iconColor = Colors.white,
+    this.expandProgress = true,
+    this.blur = 3,
   })  : assert(stackThreshold > 0, 'stackThreshold must be greater than 0'),
         assert(stackOffset >= 0, 'stackOffset must be non-negative'),
         assert(
-        stackScale > 0 && stackScale <= 1,
-        'stackScale must be between 0 and 1',
+          stackScale > 0 && stackScale <= 1,
+          'stackScale must be between 0 and 1',
         ),
         assert(width == null || width > 0, 'width must be positive or null'),
         assert(minWidth > 0, 'minWidth must be positive'),
@@ -117,17 +133,23 @@ class ToastStackConfig {
     EdgeInsets? margin,
     bool? showProgressByDefault,
     Widget Function(
-        BuildContext context,
-        String title,
-        String message,
-        ToastType type,
-        )? toastBuilder,
+      BuildContext context,
+      String title,
+      String message,
+      ToastType type,
+      ValueNotifier<double>? progress,
+      VoidCallback? dismissToast,
+      List<ToastAction>? actions,
+    )? toastBuilder,
     TextStyle? titleTextStyle,
     TextStyle? messageStyle,
-    TextStyle? actionLabelStyle,
+    TextStyle? buttonsActionStyle,
     Color? progressColor,
     Color? progressBackgroundColor,
     double? progressStrokeWidth,
+    Color? iconColor,
+    bool? expandProgress,
+    double? blur,
   }) {
     return ToastStackConfig(
       position: position ?? this.position,
@@ -143,14 +165,18 @@ class ToastStackConfig {
       maxWidth: maxWidth ?? this.maxWidth,
       margin: margin ?? this.margin,
       showProgressByDefault:
-      showProgressByDefault ?? this.showProgressByDefault,
+          showProgressByDefault ?? this.showProgressByDefault,
       toastBuilder: toastBuilder ?? this.toastBuilder,
       titleTextStyle: titleTextStyle ?? this.titleTextStyle,
       messageStyle: messageStyle ?? this.messageStyle,
-      actionLabelStyle: actionLabelStyle ?? this.actionLabelStyle,
+      buttonsActionStyle: buttonsActionStyle ?? this.buttonsActionStyle,
       progressColor: progressColor ?? this.progressColor,
-      progressBackgroundColor: progressBackgroundColor ?? this.progressBackgroundColor,
+      progressBackgroundColor:
+          progressBackgroundColor ?? this.progressBackgroundColor,
       progressStrokeWidth: progressStrokeWidth ?? this.progressStrokeWidth,
+      iconColor: iconColor ?? this.iconColor,
+      expandProgress: expandProgress ?? this.expandProgress,
+      blur: blur ?? this.blur,
     );
   }
 }

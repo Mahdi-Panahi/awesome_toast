@@ -1,3 +1,4 @@
+export 'src/models/toast_action.dart';
 export 'src/models/toast_config.dart';
 export 'src/models/toast_item.dart';
 export 'src/models/toast_position.dart';

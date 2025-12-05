@@ -42,8 +42,6 @@ class ToastProvider extends StatefulWidget {
 
   @override
   State<ToastProvider> createState() => _ToastProviderState();
-
-
 }
 
 class _ToastProviderState extends State<ToastProvider> {
@@ -66,18 +64,20 @@ class _ToastProviderState extends State<ToastProvider> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.topLeft,
-      fit: StackFit.expand,
-      children: [
-        widget.child,
-        Positioned.fill(
-          child: _ToastOverlay(
-            toastService: _toastService,
-            config: widget.config,
+    return TapRegionSurface(
+      child: Stack(
+        alignment: Alignment.topLeft,
+        fit: StackFit.expand,
+        children: [
+          widget.child,
+          Positioned.fill(
+            child: _ToastOverlay(
+              toastService: _toastService,
+              config: widget.config,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

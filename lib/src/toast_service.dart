@@ -1,7 +1,9 @@
+import 'package:awesome_toast/src/models/toast_action.dart';
 import 'package:flutter/material.dart';
 
 import 'models/toast_config.dart';
 import 'models/toast_item.dart';
+import 'widgets/default_toast.dart';
 
 /// A singleton service for managing and displaying toast notifications globally.
 ///
@@ -45,45 +47,33 @@ class ToastService extends ChangeNotifier {
   /// - [duration]: How long the toast should be visible. If null, it remains
   ///   until dismissed manually.
   /// - [showProgress]: Whether to show a progress indicator for the duration.
-  /// - [actionLabel]: An optional label for an action button on the toast.
-  /// - [onAction]: A callback triggered when the action button is pressed.
+  /// - [actions]: A list of [ToastAction] buttons to display on the toast.
   /// - [onDismiss]: A callback triggered when the toast is dismissed.
-  /// - [actionLabelStyle]: Custom text style for the action label.
+  /// - [buttonsActionStyle]: Custom text style for the action buttons.
   /// - [progressColor]: Custom color for the progress indicator.
   /// - [progressBackgroundColor]: Custom background color for the progress indicator.
   /// - [progressStrokeWidth]: Custom stroke width for the progress indicator.
   void show({
-    required Widget child,
+    required ToastContentBuilder contentBuilder,
     Duration? duration,
-    bool? showProgress,
-    String? actionLabel,
-    VoidCallback? onAction,
     VoidCallback? onDismiss,
-    TextStyle? actionLabelStyle,
-    Color? progressColor,
-    Color? progressBackgroundColor,
-    double? progressStrokeWidth,
+    List<ToastAction>? actions,
+    ValueNotifier<double>? progressNotifier,
+    bool? dismissable,
   }) {
     final key = 'toast_${_counter++}_${DateTime.now().millisecondsSinceEpoch}';
 
-    final effectiveShowProgress =
-        showProgress ?? _config?.showProgressByDefault ?? false;
-
     final item = ToastItem(
       key: key,
-      child: child,
+      contentBuilder: contentBuilder,
       duration: duration,
       onDismiss: () {
         _removeToast(key);
         onDismiss?.call();
       },
-      showProgress: effectiveShowProgress,
-      actionLabel: actionLabel,
-      onAction: onAction,
-      actionLabelStyle: actionLabelStyle,
-      progressColor: progressColor,
-      progressBackgroundColor: progressBackgroundColor,
-      progressStrokeWidth: progressStrokeWidth,
+      actions: actions,
+      progressNotifier: progressNotifier,
+      dismissable: dismissable,
     );
 
     _items.insert(0, item);
@@ -93,150 +83,305 @@ class ToastService extends ChangeNotifier {
   /// Shows a toast using the default styling provided by [DefaultToast].
   ///
   /// This is a convenience method that simplifies showing standard toasts.
-  /// If a `toastBuilder` is provided in [ToastStackConfig], it will be used instead.
+  /// If a `toastBuilder` is provided in [ToastStackConfig], it will be used instead. Enough
   void showDefault({
     required String title,
     required String message,
     ToastType type = ToastType.info,
     Duration? duration,
     bool? showProgress,
-    String? actionLabel,
-    VoidCallback? onAction,
     VoidCallback? onDismiss,
-    TextStyle? actionLabelStyle,
+    TextStyle? buttonsActionStyle,
     Color? progressColor,
     Color? progressBackgroundColor,
     double? progressStrokeWidth,
+    List<ToastAction>? actions,
+    ValueNotifier<double>? progressNotifier,
+    BorderRadiusGeometry? borderRadius,
+    EdgeInsetsGeometry? padding,
+    Color? backgroundColor,
+    IconData? icon,
+    TextStyle? titleTextStyle,
+    TextStyle? messageTextStyle,
+    Color? iconColor,
+    bool? expandProgress,
+    double? blur,
+    bool? dismissable,
   }) {
-    if (_config?.toastBuilder != null) {
-      show(
-        child: Builder(
-          builder: (context) =>
-              _config!.toastBuilder!(context, title, message, type),
-        ),
-        duration: duration,
-        showProgress: showProgress,
-        actionLabel: actionLabel,
-        onAction: onAction,
-        onDismiss: onDismiss,
-        actionLabelStyle: actionLabelStyle,
-        progressColor: progressColor,
-        progressBackgroundColor: progressBackgroundColor,
-        progressStrokeWidth: progressStrokeWidth,
-      );
-    } else {
-      show(
-        child: Builder(
-          builder: (context) => _DefaultToastInternal(
+    show(
+      contentBuilder: (context, progress, dismissToast, actions) {
+        if (_config?.toastBuilder != null) {
+          return _config!.toastBuilder!(
+            context,
+            title,
+            message,
+            type,
+            progress,
+            dismissToast,
+            actions,
+          );
+        } else {
+          return DefaultToast(
             title: title,
             message: message,
             type: type,
-            config: _config,
-            actionLabel: actionLabel,
-          ),
-        ),
-        duration: duration,
-        showProgress: showProgress,
-        actionLabel: actionLabel,
-        onAction: onAction,
-        onDismiss: onDismiss,
-        actionLabelStyle: actionLabelStyle,
-        progressColor: progressColor,
-        progressBackgroundColor: progressBackgroundColor,
-        progressStrokeWidth: progressStrokeWidth,
-      );
-    }
+            onDismiss: dismissToast,
+            actions: actions,
+            progress: progress,
+            showProgress: showProgress,
+            progressColor: progressColor,
+            progressBackgroundColor: progressBackgroundColor,
+            progressStrokeWidth: progressStrokeWidth,
+            borderRadius: borderRadius,
+            padding: padding,
+            backgroundColor: backgroundColor,
+            icon: icon,
+            titleTextStyle: titleTextStyle,
+            messageTextStyle: messageTextStyle,
+            iconColor: iconColor,
+            expandProgress: expandProgress,
+            blur: blur,
+            dismissable: dismissable,
+          );
+        }
+      },
+      duration: duration,
+      onDismiss: onDismiss,
+      progressNotifier: progressNotifier,
+      actions: actions,
+      dismissable: dismissable,
+    );
   }
 
   /// Shows a success-themed toast.
   ///
   /// A shortcut for `showDefault` with `type = ToastType.success`.
+  ///
+  /// - [dismissable]: If false, the toast cannot be dismissed by swiping and
+  ///   will not automatically dismiss (ignores [autoDismiss] and [duration]).
   void success(
     String title,
     String message, {
     Duration? duration,
     bool? showProgress,
-    String? actionLabel,
-    VoidCallback? onAction,
+    VoidCallback? onDismiss,
     bool autoDismiss = true,
+    List<ToastAction>? actions,
+    ValueNotifier<double>? progressNotifier,
+    TextStyle? buttonsActionStyle,
+    Color? progressColor,
+    Color? progressBackgroundColor,
+    double? progressStrokeWidth,
+    BorderRadiusGeometry? borderRadius,
+    EdgeInsetsGeometry? padding,
+    Color? backgroundColor,
+    IconData? icon,
+    TextStyle? titleTextStyle,
+    TextStyle? messageTextStyle,
+    Color? iconColor,
+    bool? expandProgress,
+    double? blur,
+    bool? dismissable,
   }) {
+    final effectiveAutoDismiss = dismissable == false ? false : autoDismiss;
     showDefault(
       title: title,
       message: message,
       type: ToastType.success,
-      duration: autoDismiss ? (duration ?? _config?.defaultDuration) : null,
+      duration:
+          effectiveAutoDismiss ? (duration ?? _config?.defaultDuration) : null,
       showProgress: showProgress,
-      actionLabel: actionLabel,
-      onAction: onAction,
+      onDismiss: onDismiss,
+      actions: actions,
+      progressNotifier: progressNotifier,
+      buttonsActionStyle: buttonsActionStyle,
+      progressColor: progressColor,
+      progressBackgroundColor: progressBackgroundColor,
+      progressStrokeWidth: progressStrokeWidth,
+      borderRadius: borderRadius,
+      padding: padding,
+      backgroundColor: backgroundColor,
+      icon: icon,
+      titleTextStyle: titleTextStyle,
+      messageTextStyle: messageTextStyle,
+      iconColor: iconColor,
+      expandProgress: expandProgress,
+      blur: blur,
+      dismissable: dismissable,
     );
   }
 
   /// Shows an error-themed toast.
   ///
   /// A shortcut for `showDefault` with `type = ToastType.error`.
+  ///
+  /// - [dismissable]: If false, the toast cannot be dismissed by swiping and
+  ///   will not automatically dismiss (ignores [autoDismiss] and [duration]).
   void error(
     String title,
     String message, {
     Duration? duration,
     bool? showProgress,
-    String? actionLabel,
-    VoidCallback? onAction,
+    VoidCallback? onDismiss,
     bool autoDismiss = true,
+    List<ToastAction>? actions,
+    ValueNotifier<double>? progressNotifier,
+    TextStyle? buttonsActionStyle,
+    Color? progressColor,
+    Color? progressBackgroundColor,
+    double? progressStrokeWidth,
+    BorderRadiusGeometry? borderRadius,
+    EdgeInsetsGeometry? padding,
+    Color? backgroundColor,
+    IconData? icon,
+    TextStyle? titleTextStyle,
+    TextStyle? messageTextStyle,
+    Color? iconColor,
+    bool? expandProgress,
+    double? blur,
+    bool? dismissable,
   }) {
+    final effectiveAutoDismiss = dismissable == false ? false : autoDismiss;
     showDefault(
       title: title,
       message: message,
       type: ToastType.error,
-      duration: autoDismiss ? (duration ?? _config?.defaultDuration) : null,
+      duration:
+          effectiveAutoDismiss ? (duration ?? _config?.defaultDuration) : null,
       showProgress: showProgress,
-      actionLabel: actionLabel,
-      onAction: onAction,
+      onDismiss: onDismiss,
+      actions: actions,
+      progressNotifier: progressNotifier,
+      buttonsActionStyle: buttonsActionStyle,
+      progressColor: progressColor,
+      progressBackgroundColor: progressBackgroundColor,
+      progressStrokeWidth: progressStrokeWidth,
+      borderRadius: borderRadius,
+      padding: padding,
+      backgroundColor: backgroundColor,
+      icon: icon,
+      titleTextStyle: titleTextStyle,
+      messageTextStyle: messageTextStyle,
+      iconColor: iconColor,
+      expandProgress: expandProgress,
+      blur: blur,
+      dismissable: dismissable,
     );
   }
 
   /// Shows a warning-themed toast.
   ///
   /// A shortcut for `showDefault` with `type = ToastType.warning`.
+  ///
+  /// - [dismissable]: If false, the toast cannot be dismissed by swiping and
+  ///   will not automatically dismiss (ignores [autoDismiss] and [duration]).
   void warning(
     String title,
     String message, {
     Duration? duration,
     bool? showProgress,
-    String? actionLabel,
-    VoidCallback? onAction,
+    VoidCallback? onDismiss,
     bool autoDismiss = true,
+    List<ToastAction>? actions,
+    ValueNotifier<double>? progressNotifier,
+    TextStyle? buttonsActionStyle,
+    Color? progressColor,
+    Color? progressBackgroundColor,
+    double? progressStrokeWidth,
+    BorderRadiusGeometry? borderRadius,
+    EdgeInsetsGeometry? padding,
+    Color? backgroundColor,
+    IconData? icon,
+    TextStyle? titleTextStyle,
+    TextStyle? messageTextStyle,
+    Color? iconColor,
+    bool? expandProgress,
+    double? blur,
+    bool? dismissable,
   }) {
+    final effectiveAutoDismiss = dismissable == false ? false : autoDismiss;
     showDefault(
       title: title,
       message: message,
       type: ToastType.warning,
-      duration: autoDismiss ? (duration ?? _config?.defaultDuration) : null,
+      duration:
+          effectiveAutoDismiss ? (duration ?? _config?.defaultDuration) : null,
       showProgress: showProgress,
-      actionLabel: actionLabel,
-      onAction: onAction,
+      onDismiss: onDismiss,
+      actions: actions,
+      progressNotifier: progressNotifier,
+      buttonsActionStyle: buttonsActionStyle,
+      progressColor: progressColor,
+      progressBackgroundColor: progressBackgroundColor,
+      progressStrokeWidth: progressStrokeWidth,
+      borderRadius: borderRadius,
+      padding: padding,
+      backgroundColor: backgroundColor,
+      icon: icon,
+      titleTextStyle: titleTextStyle,
+      messageTextStyle: messageTextStyle,
+      iconColor: iconColor,
+      expandProgress: expandProgress,
+      blur: blur,
+      dismissable: dismissable,
     );
   }
 
   /// Shows an info-themed toast.
   ///
   /// A shortcut for `showDefault` with `type = ToastType.info`.
+  ///
+  /// - [dismissable]: If false, the toast cannot be dismissed by swiping and
+  ///   will not automatically dismiss (ignores [autoDismiss] and [duration]).
   void info(
     String title,
     String message, {
     Duration? duration,
     bool? showProgress,
-    String? actionLabel,
-    VoidCallback? onAction,
+    VoidCallback? onDismiss,
     bool autoDismiss = true,
+    List<ToastAction>? actions,
+    ValueNotifier<double>? progressNotifier,
+    TextStyle? buttonsActionStyle,
+    Color? progressColor,
+    Color? progressBackgroundColor,
+    double? progressStrokeWidth,
+    BorderRadiusGeometry? borderRadius,
+    EdgeInsetsGeometry? padding,
+    Color? backgroundColor,
+    IconData? icon,
+    TextStyle? titleTextStyle,
+    TextStyle? messageTextStyle,
+    Color? iconColor,
+    bool? expandProgress,
+    double? blur,
+    bool? dismissable,
   }) {
+    final effectiveAutoDismiss = dismissable == false ? false : autoDismiss;
     showDefault(
       title: title,
       message: message,
       type: ToastType.info,
-      duration: autoDismiss ? (duration ?? _config?.defaultDuration) : null,
+      duration:
+          effectiveAutoDismiss ? (duration ?? _config?.defaultDuration) : null,
       showProgress: showProgress,
-      actionLabel: actionLabel,
-      onAction: onAction,
+      onDismiss: onDismiss,
+      actions: actions,
+      progressNotifier: progressNotifier,
+      buttonsActionStyle: buttonsActionStyle,
+      progressColor: progressColor,
+      progressBackgroundColor: progressBackgroundColor,
+      progressStrokeWidth: progressStrokeWidth,
+      borderRadius: borderRadius,
+      padding: padding,
+      backgroundColor: backgroundColor,
+      icon: icon,
+      titleTextStyle: titleTextStyle,
+      messageTextStyle: messageTextStyle,
+      iconColor: iconColor,
+      expandProgress: expandProgress,
+      blur: blur,
+      dismissable: dismissable,
     );
   }
 
@@ -258,91 +403,5 @@ class ToastService extends ChangeNotifier {
   void dispose() {
     _items.clear();
     super.dispose();
-  }
-}
-
-// Internal default toast widget
-class _DefaultToastInternal extends StatelessWidget {
-  final String title;
-  final String message;
-  final ToastType type;
-  final ToastStackConfig? config;
-  final String? actionLabel;
-
-  const _DefaultToastInternal({
-    required this.title,
-    required this.message,
-    required this.type,
-    this.config,
-    required this.actionLabel,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
-    Color backgroundColor;
-    IconData icon;
-
-    switch (type) {
-      case ToastType.success:
-        backgroundColor = isDark
-            ? Colors.green.shade900
-            : Colors.green.shade100;
-        icon = Icons.check_circle;
-        break;
-      case ToastType.error:
-        backgroundColor = isDark ? Colors.red.shade900 : Colors.red.shade100;
-        icon = Icons.error;
-        break;
-      case ToastType.warning:
-        backgroundColor = isDark
-            ? Colors.orange.shade900
-            : Colors.orange.shade100;
-        icon = Icons.warning;
-        break;
-      case ToastType.info:
-        backgroundColor = isDark ? Colors.blue.shade900 : Colors.blue.shade100;
-        icon = Icons.info;
-        break;
-    }
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, size: 24),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  title,
-                  style:
-                      config?.titleTextStyle ??
-                      const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  message,
-                  style: config?.messageStyle ?? const TextStyle(fontSize: 14),
-                ),
-                if (actionLabel != null) SizedBox(height: 32),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }

@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 import '../models/toast_config.dart';
@@ -125,8 +123,7 @@ class _ToastStackWidgetState extends State<ToastStackWidget> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.sizeOf(context).width;
-    final calculatedWidth =
-        widget.config.width ??
+    final calculatedWidth = widget.config.width ??
         (screenWidth * 0.9).clamp(
           widget.config.minWidth,
           widget.config.maxWidth,
@@ -213,16 +210,24 @@ class _ToastStackLayoutState extends State<_ToastStackLayout> {
     return ListenableBuilder(
       listenable: widget.hoverNotifier,
       builder: (context, _) {
-        final isStacked =
-            widget.items.length > widget.config.stackThreshold &&
+        final isStacked = widget.items.length > widget.config.stackThreshold &&
             !widget.hoverNotifier.isHovered;
+
+        // Pre-calculate offsets
+        final offsets = <String, double>{};
+        double currentOffset = 0;
+        for (final item in widget.items) {
+          offsets[item.key] = currentOffset;
+          currentOffset += (_itemHeights[item.key] ?? 80.0) + 8;
+        }
+        final calculatedTotalHeight = currentOffset > 0 ? currentOffset : 100.0;
 
         return TweenAnimationBuilder<double>(
           tween: Tween(begin: 0, end: isStacked ? 1 : 0),
           duration: widget.config.stackDuration,
           curve: widget.config.curve,
           builder: (context, stackProgress, child) {
-            final totalHeight = isStacked ? 100.0 : _calculateTotalHeight();
+            final totalHeight = isStacked ? 100.0 : calculatedTotalHeight;
 
             return SizedBox(
               height: totalHeight,
@@ -237,6 +242,7 @@ class _ToastStackLayoutState extends State<_ToastStackLayout> {
                       i,
                       stackProgress,
                       isStacked,
+                      offsets[widget.items[i].key] ?? 0.0,
                     ),
                 ],
               ),
@@ -247,20 +253,13 @@ class _ToastStackLayoutState extends State<_ToastStackLayout> {
     );
   }
 
-  double _calculateTotalHeight() {
-    double total = 0;
-    for (var item in widget.items) {
-      total += (_itemHeights[item.key] ?? 80.0) + 8;
-    }
-    return total > 0 ? total : 100;
-  }
-
   Widget _buildItem(
     BuildContext context,
     ToastItem item,
     int index,
     double stackProgress,
     bool isStacked,
+    double expandedOffset,
   ) {
     final isDismissing = widget.dismissing[item.key] == true;
     final isVisible = !isStacked || index < 3;
@@ -293,7 +292,7 @@ class _ToastStackLayoutState extends State<_ToastStackLayout> {
       }
     } else {
       opacity = 1.0;
-      positionOffset = _calculateExpandedOffset(index);
+      positionOffset = expandedOffset;
     }
 
     return AnimatedPositioned(
@@ -311,9 +310,8 @@ class _ToastStackLayoutState extends State<_ToastStackLayout> {
           opacity: opacity,
           child: Transform.scale(
             scale: scale,
-            alignment: widget.isTop
-                ? Alignment.topCenter
-                : Alignment.bottomCenter,
+            alignment:
+                widget.isTop ? Alignment.topCenter : Alignment.bottomCenter,
             child: LayoutBuilder(
               builder: (context, constraints) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -337,18 +335,6 @@ class _ToastStackLayoutState extends State<_ToastStackLayout> {
         ),
       ),
     );
-  }
-
-  double _calculateExpandedOffset(int index) {
-    if (index == 0) return 0;
-
-    double totalOffset = 0;
-    for (int i = 0; i < index; i++) {
-      final itemKey = widget.items[i].key;
-      totalOffset += (_itemHeights[itemKey] ?? 80.0) + 8;
-    }
-
-    return totalOffset;
   }
 }
 
@@ -377,6 +363,7 @@ class _ToastItemWidgetState extends State<_ToastItemWidget>
   late Animation<Offset> _slideAnimation;
   late Animation<double> _fadeAnimation;
   late AnimationController _progressController;
+  late final ValueNotifier<double> _progressNotifier;
 
   final ValueNotifier<double> _dragOffsetNotifier = ValueNotifier(0);
   bool _isDragging = false;
@@ -390,26 +377,36 @@ class _ToastItemWidgetState extends State<_ToastItemWidget>
       duration: const Duration(milliseconds: 200),
     );
 
-    _slideAnimation = Tween<Offset>(begin: _getEntryOffset(), end: Offset.zero)
-        .animate(
-          CurvedAnimation(parent: _controller, curve: Curves.easeInOutQuart),
-        );
+    _slideAnimation =
+        Tween<Offset>(begin: _getEntryOffset(), end: Offset.zero).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOutQuart),
+    );
 
     _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(parent: _controller, curve: const Interval(0, 0.5)),
     );
 
-    _progressController = AnimationController(
-      vsync: this,
-      duration: widget.item.duration,
-    );
+    _progressNotifier =
+        widget.item.progressNotifier ?? ValueNotifier<double>(0);
 
-    if (widget.item.duration != null) {
-      _progressController.addStatusListener((status) {
-        if (status == AnimationStatus.completed && mounted && !_isTimerPaused) {
-          _dismiss();
-        }
+    if (widget.item.progressNotifier == null) {
+      _progressController = AnimationController(
+        vsync: this,
+        duration: widget.item.duration,
+      );
+      _progressController.addListener(() {
+        _progressNotifier.value = _progressController.value;
       });
+
+      if (widget.item.duration != null) {
+        _progressController.addStatusListener((status) {
+          if (status == AnimationStatus.completed &&
+              mounted &&
+              !_isTimerPaused) {
+            _dismiss();
+          }
+        });
+      }
     }
 
     _controller.forward();
@@ -432,13 +429,15 @@ class _ToastItemWidgetState extends State<_ToastItemWidget>
   }
 
   void _startTimer() {
-    if (widget.item.duration != null && !_isTimerPaused) {
+    if (widget.item.progressNotifier == null &&
+        widget.item.duration != null &&
+        !_isTimerPaused) {
       _progressController.forward();
     }
   }
 
   void setTimerPaused(bool paused) {
-    if (_isTimerPaused != paused) {
+    if (widget.item.progressNotifier == null && _isTimerPaused != paused) {
       _isTimerPaused = paused;
       if (widget.item.duration != null) {
         if (paused) {
@@ -458,7 +457,29 @@ class _ToastItemWidgetState extends State<_ToastItemWidget>
   }
 
   void _onHorizontalDragUpdate(DragUpdateDetails details) {
-    _dragOffsetNotifier.value += details.delta.dx;
+    final dismissable = widget.item.dismissable ?? true;
+
+    if (!dismissable) {
+      // If not dismissable, apply resistance (dampening)
+      double newDragValue = _dragOffsetNotifier.value + details.delta.dx;
+      double resistance = 1.0;
+
+      if (newDragValue.abs() > 20) {
+        resistance = 0.2; // High resistance after 20px
+      } else if (newDragValue.abs() > 10) {
+        resistance = 0.5; // Medium resistance
+      }
+
+      _dragOffsetNotifier.value += details.delta.dx * resistance;
+      
+      // Cap the drag distance
+      if (_dragOffsetNotifier.value.abs() > 50) {
+        _dragOffsetNotifier.value = _dragOffsetNotifier.value.sign * 50;
+      }
+    } else {
+      _dragOffsetNotifier.value += details.delta.dx;
+    }
+
     if (!_isDragging) {
       _isDragging = true;
     }
@@ -466,19 +487,49 @@ class _ToastItemWidgetState extends State<_ToastItemWidget>
 
   void _onHorizontalDragEnd(DragEndDetails details) {
     final width = context.size?.width ?? 320;
-    if (_dragOffsetNotifier.value.abs() > width * 0.4) {
+    final dismissable = widget.item.dismissable ?? true;
+
+    if (dismissable && _dragOffsetNotifier.value.abs() > width * 0.4) {
       _dismiss();
     } else {
-      _dragOffsetNotifier.value = 0;
-      _isDragging = false;
+      // Snap back with animation
+      final remaining = 0 - _dragOffsetNotifier.value;
+      final duration = Duration(milliseconds: (remaining.abs() * 2).clamp(100, 300).toInt());
+      
+      final controller = AnimationController(
+        vsync: this,
+        duration: duration,
+      );
+      
+      final animation = Tween<double>(
+        begin: _dragOffsetNotifier.value,
+        end: 0,
+      ).animate(CurvedAnimation(parent: controller, curve: Curves.easeOut));
+
+      animation.addListener(() {
+        if (mounted) {
+          _dragOffsetNotifier.value = animation.value;
+        }
+      });
+
+      controller.forward().then((_) {
+        controller.dispose();
+        if (mounted) {
+          _dragOffsetNotifier.value = 0;
+          _isDragging = false;
+        }
+      });
     }
   }
 
   @override
   void dispose() {
     _controller.dispose();
-    _progressController.dispose();
+    if (widget.item.progressNotifier == null) {
+      _progressController.dispose();
+    }
     _dragOffsetNotifier.dispose();
+    _progressNotifier.dispose();
     super.dispose();
   }
 
@@ -526,93 +577,14 @@ class _ToastItemWidgetState extends State<_ToastItemWidget>
   Widget _buildContent() {
     Widget content = Container(
       margin: const EdgeInsets.only(bottom: 8),
-      child: Material(
-        elevation: 4,
-        borderRadius: BorderRadius.circular(8),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Stack(
-            alignment: Alignment.topLeft,
-            clipBehavior: Clip.none,
-            children: [
-              widget.item.child,
-
-              // if(widget.item.actionLabel != null)
-              //   Container(
-              //     width: 100,
-              //     height: 200,
-              //     color: Colors.red,
-              //   ),
-              if (widget.item.showProgress && widget.item.duration != null)
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  left: 0,
-                  child: AnimatedBuilder(
-                    animation: _progressController,
-                    builder: (context, child) {
-                      return LinearProgressIndicator(
-                        value: _progressController.value,
-                        color:
-                            widget.item.progressColor ??
-                            widget.config.progressColor,
-                        backgroundColor:
-                            widget.item.progressBackgroundColor ??
-                            widget.config.progressBackgroundColor,
-                        minHeight:
-                            widget.item.progressStrokeWidth ??
-                            widget.config.progressStrokeWidth,
-                      );
-                    },
-                  ),
-                ),
-              if (widget.item.actionLabel != null)
-                Positioned(
-                  right: 8,
-                  bottom: 8,
-                  child: TextButton(
-                    onPressed: () {
-                      if (widget.item.onAction != null) {
-                        widget.item.onAction!();
-                      }
-                      _dismiss();
-                    },
-                    child: Text(
-                      widget.item.actionLabel!,
-                      style:
-                          widget.item.actionLabelStyle ??
-                          widget.config.actionLabelStyle,
-                    ),
-                  ),
-                ),
-              Positioned(
-                top: 4,
-                right: 4,
-                child: IconButton(
-                  icon: const Icon(Icons.close, size: 18),
-                  onPressed: _dismiss,
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(
-                    minWidth: 24,
-                    minHeight: 24,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+      child: Stack(
+        alignment: Alignment.topCenter,
+        clipBehavior: Clip.none,
+        children: [
+          widget.item.contentBuilder(context, _progressNotifier, _dismiss, widget.item.actions),
+        ],
       ),
     );
-
-    if (widget.showBlur) {
-      content = ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
-          child: content,
-        ),
-      );
-    }
 
     return content;
   }
