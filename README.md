@@ -110,7 +110,7 @@ Override the default look for all standard toasts in your app.
 ```dart
 ToastProvider(
   config: ToastStackConfig(
-    toastBuilder: (context, title, message, type, progress, dismiss, actions) {
+    toastBuilder: (context, title, message, type, progress, dismiss, actions, dismissable, showProgress) {
       return Container(
         padding: const EdgeInsets.all(16),
         color: Colors.black87,

@@ -1,3 +1,7 @@
+# 2.0.1
+
+*   **Update:** `toastBuilder` in `ToastStackConfig` now accepts `dismissable` and `showProgress` parameters: `(context, title, message, type, progress, dismissToast, actions, dismissable, showProgress)`.
+
 # 2.0.0
 
 *   **Breaking Change:** `contentBuilder` in `show` method now accepts `actions` as a parameter: `(context, progress, dismissToast, actions)`.

@@ -119,6 +119,8 @@ class ToastService extends ChangeNotifier {
             progress,
             dismissToast,
             actions,
+            dismissable,
+            showProgress,
           );
         } else {
           return DefaultToast(
