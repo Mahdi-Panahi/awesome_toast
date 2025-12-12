@@ -521,6 +521,7 @@ class _DemoScreenState extends State<DemoScreen> {
                         progressBackgroundColor:
                             Colors.grey.withAlpha((0.5 * 255).round()),
                         progressStrokeWidth: 10,
+                        expandProgress: false,
                         showProgress: true,
                         progress: progress,
                       ),
