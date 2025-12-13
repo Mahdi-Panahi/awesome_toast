@@ -67,7 +67,7 @@ class MyApp extends StatelessWidget {
     return ToastProvider(
       child: MaterialApp(
         title: 'Awesome Toast Demo',
-        home: DemoScreen(),
+        home: const DemoScreen(),
       ),
     );
   }
@@ -85,26 +85,26 @@ Use the convenience methods on `ToastService.instance` for standard success, err
 ```dart
 // Success
 ToastService.instance.success(
-'Success',
-'Your changes have been saved!',
+  'Success',
+  'Your changes have been saved!',
 );
 
 // Error
 ToastService.instance.error(
-'Error',
-'Something went wrong. Please try again.',
+  'Error',
+  'Something went wrong. Please try again.',
 );
 
 // Warning
 ToastService.instance.warning(
-'Warning',
-'You have unsaved changes.',
+  'Warning',
+  'You have unsaved changes.',
 );
 
 // Info
 ToastService.instance.info(
-'Info',
-'New update available.',
+  'Info',
+  'New update available.',
 );
 ```
 
@@ -114,16 +114,16 @@ You can configure the global behavior of the toast stack via `ToastStackConfig`.
 
 ```dart
 ToastProvider(
-config: ToastStackConfig(
-position: ToastPosition.topRight,
-stackThreshold: 3,
-animationCurve: Curves.easeInOutBack,
-defaultDuration: const Duration(seconds: 4),
-blur: 5.0, // Enable glassmorphism
-iconColor: Colors.white,
-expandProgress: true, // Progress bar fills the background
-),
-child: // ...
+  config: const ToastStackConfig(
+    position: ToastPosition.topRight,
+    stackThreshold: 3,
+    animationCurve: Curves.easeInOutBack,
+    defaultDuration: Duration(seconds: 4),
+    blur: 5.0, // Enable glassmorphism
+    iconColor: Colors.white,
+    expandProgress: true, // Progress bar fills the background
+  ),
+  child: // ...
 )
 ```
 
@@ -137,21 +137,21 @@ Override the default look for all standard toasts in your app.
 
 ```dart
 ToastProvider(
-config: ToastStackConfig(
-toastBuilder: (context, title, message, type, progress, dismiss, actions, dismissable, showProgress) {
-return Container(
-padding: const EdgeInsets.all(16),
-color: Colors.black87,
-child: Column(
-children: [
-Text(title, style: const TextStyle(color: Colors.amber)),
-Text(message, style: const TextStyle(color: Colors.white)),
-],
-),
-);
-},
-),
-child: // ...
+  config: ToastStackConfig(
+    toastBuilder: (context,title,message,type,progress,dismiss,actions,dismissable,showProgress,) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        color: Colors.black87,
+        child: Column(
+          children: [
+            Text(title, style: const TextStyle(color: Colors.amber)),
+            Text(message, style: const TextStyle(color: Colors.white)),
+          ],
+        ),
+      );
+    },
+  ),
+  child: // ...
 )
 ```
 
@@ -161,20 +161,20 @@ Use `ToastService.instance.show` for completely custom widgets.
 
 ```dart
 ToastService.instance.show(
-contentBuilder: (context, progress, dismiss, actions) {
-// 'progress' is a ValueNotifier<double> that goes from 0.0 to 1.0
-return Container(
-height: 100,
-color: Colors.deepPurple,
-child: Center(
-child: ElevatedButton(
-onPressed: dismiss,
-child: const Text('Close Custom Toast'),
-),
-),
-);
-},
-duration: const Duration(seconds: 5),
+  contentBuilder: (context, progress, dismiss, actions) {
+    // 'progress' is a ValueNotifier<double> that goes from 0.0 to 1.0
+    return Container(
+      height: 100,
+      color: Colors.deepPurple,
+      child: Center(
+        child: ElevatedButton(
+          onPressed: dismiss,
+          child: const Text('Close Custom Toast'),
+        ),
+      ),
+    );
+  },
+  duration: const Duration(seconds: 5),
 );
 ```
 
@@ -184,9 +184,9 @@ You can make a toast persistent and resistant to swipe gestures.
 
 ```dart
 ToastService.instance.warning(
-'Critical Alert',
-'This action cannot be undone.',
-dismissable: false, // Disables swipe-to-dismiss and auto-dismiss
+  'Critical Alert',
+  'This action cannot be undone.',
+  dismissable: false, // Disables swipe-to-dismiss and auto-dismiss
 );
 ```
 
