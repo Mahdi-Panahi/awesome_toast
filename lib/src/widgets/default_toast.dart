@@ -247,7 +247,8 @@ class DefaultToast extends StatelessWidget {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20),
                                     border: Border.all(
-                                      color: Colors.white,
+                                      color: buttonsActionStyle?.color ??
+                                          config?.buttonsActionStyle?.color ?? Colors.white,
                                       width: 1,
                                     ),
                                   ),

@@ -54,6 +54,8 @@ class ToastStackConfig {
     ValueNotifier<double>? progress,
     VoidCallback? dismissToast,
     List<ToastAction>? actions,
+    bool? dismissable,
+    bool? showProgress,
   )? toastBuilder;
 
   /// Default title text style
@@ -140,6 +142,8 @@ class ToastStackConfig {
       ValueNotifier<double>? progress,
       VoidCallback? dismissToast,
       List<ToastAction>? actions,
+      bool? dismissable,
+      bool? showProgress,
     )? toastBuilder,
     TextStyle? titleTextStyle,
     TextStyle? messageStyle,

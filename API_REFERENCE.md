@@ -327,7 +327,17 @@ const ToastStackConfig({
   double width = 340,
   EdgeInsets margin = const EdgeInsets.all(16),
   bool showProgressByDefault = false,
-  Widget Function(BuildContext, String, String, ToastType)? toastBuilder,
+  Widget Function(
+    BuildContext,
+    String,
+    String,
+    ToastType,
+    ValueNotifier<double>?,
+    VoidCallback?,
+    List<ToastAction>?,
+    bool?,
+    bool?,
+  )? toastBuilder,
 })
 ```
 
@@ -519,7 +529,17 @@ You can provide a custom builder function in `ToastStackConfig`:
 
 ```dart
 ToastStackConfig(
-  toastBuilder: (BuildContext context, String title, String message, ToastType type) {
+  toastBuilder: (
+    BuildContext context,
+    String title,
+    String message,
+    ToastType type,
+    ValueNotifier<double>? progress,
+    VoidCallback? dismissToast,
+    List<ToastAction>? actions,
+    bool? dismissable,
+    bool? showProgress,
+  ) {
     // Return your custom widget
     return Container(
       padding: EdgeInsets.all(16),
@@ -623,7 +643,7 @@ For consistent branding, use `toastBuilder`:
 
 ```dart
 ToastStackConfig(
-  toastBuilder: (context, title, message, type) {
+  toastBuilder: (context, title, message, type, progress, dismissToast, actions, dismissable, showProgress) {
     return BrandedToastWidget(
       title: title,
       message: message,
