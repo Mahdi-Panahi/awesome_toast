@@ -577,12 +577,15 @@ class _ToastItemWidgetState extends State<_ToastItemWidget>
   Widget _buildContent() {
     Widget content = Container(
       margin: const EdgeInsets.only(bottom: 8),
-      child: Stack(
-        alignment: Alignment.topCenter,
-        clipBehavior: Clip.none,
-        children: [
-          widget.item.contentBuilder(context, _progressNotifier, _dismiss, widget.item.actions),
-        ],
+      child: Material(
+        type: MaterialType.transparency,
+        child: Stack(
+          alignment: Alignment.topCenter,
+          clipBehavior: Clip.none,
+          children: [
+            widget.item.contentBuilder(context, _progressNotifier, _dismiss, widget.item.actions),
+          ],
+        ),
       ),
     );
 

@@ -329,7 +329,10 @@ class DefaultToast extends StatelessWidget {
 
     return ClipRRect(
       borderRadius: br,
-      child: content,
+      child: Material(
+        type: MaterialType.transparency,
+        child: content,
+      ),
     );
   }
 }
