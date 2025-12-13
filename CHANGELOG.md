@@ -1,3 +1,7 @@
+# 2.0.2
+
+*   **Fix:** Added default `Material` widget wrapper to toasts to prevent "yellow text" styling issues (missing Material ancestor).
+
 # 2.0.1
 
 *   **Update:** `toastBuilder` in `ToastStackConfig` now accepts `dismissable` and `showProgress` parameters: `(context, title, message, type, progress, dismissToast, actions, dismissable, showProgress)`.

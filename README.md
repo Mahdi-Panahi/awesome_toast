@@ -46,7 +46,7 @@ Add `awesome_toast` to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  awesome_toast: ^2.0.1
+  awesome_toast: ^2.0.2
 ```
 
 Wrap your app with `ToastProvider`:
